@@ -1,0 +1,23 @@
+﻿@using ProyectoBlazor.Pages
+
+@inherits LayoutComponentBase
+@inject NavigationManager Navigation
+
+<div class="page">
+    <main>
+        <div class="top-row px-4">
+            <a class="logo" href="" style="cursor: pointer;">
+                <img src="https://cdn-icons-png.freepik.com/512/9284/9284424.png" alt="Redirigir a Proyecto Blazor"/>
+            </a>
+            <div></div>
+            <a class="nav-tab active">
+                <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" width="45" height="45" alt="img" />
+            <div>Inicio</div>
+            </a>
+
+            <Administracion />           
+
+        </div>       
+        <Index />
+    </main>
+</div>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Proyecto Blazor</title>
+    <base href="/" />
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link href="ProyectoBlazor.styles.css" rel="stylesheet" />
+</head>
+
+<body>
+        <!--CARGANDO-->
+        <div id="cargando" class="loading-bar" style="display:block;"></div>
+
+        <!--PRINCIPAL-->
+        <div id="pagePrincipal" style="display:none;">
+            <div id="app"/>
+        </div>
+
+        <script>
+            document.getElementById('pagePrincipal').style.display = 'none';
+            document.body.style.visibility = 'visible';
+
+            setTimeout(function () {
+                document.getElementById('cargando').style.display = 'none';
+                document.getElementById('pagePrincipal').style.display = 'block';
+            }, 2500);
+        </script>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+    <script src="_framework/blazor.webassembly.js"></script>
+</body>
+
+</html>

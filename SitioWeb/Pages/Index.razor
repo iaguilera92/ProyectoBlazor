@@ -1,0 +1,70 @@
+﻿@page "/index"
+@using Entidades
+@inject HttpClient HttpClient
+@inject Principal Principal
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+<br />
+<center>
+    <div>
+        <ul class="producto-cards">
+            @if (productos is not null)
+            {
+                @foreach (var special in productos)
+                {
+                    <li style="background-image: url('@special.ImageUrl')">
+                        <div class="producto-info">
+                            <span class="title">@special.NombreProducto</span>
+                            @special.Descripcion
+                            <span class="price">@special.Valor.ToString("C0")</span>
+                        </div>
+                    </li>
+                }
+            }
+        </ul>
+    </div>
+    <!--PRUEBA BORRAR-->
+    <br />
+    <br />
+    <div>
+        <button class="btn btn-primary" @onclick="IncrementCount">Click Test</button>
+
+        @code {
+            private int currentCount = 0;
+
+            private void IncrementCount()
+            {
+                currentCount++;
+            }
+        }
+    </div>
+</center>
+
+@code
+{
+    List<Productos> productos = new List<Productos>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        //TEST - PRINCIPAL STOCK
+        var producto1 = Principal.GetProducto("Producto 1", 20000);
+        productos.Add(producto1);
+        var producto2 = Principal.GetProducto("Producto 2", 15000);
+        productos.Add(producto2);
+        var producto3 = Principal.GetProducto("Producto 3", 35000);
+        productos.Add(producto3);
+        var producto4 = Principal.GetProducto("Producto 4", 23990);
+        productos.Add(producto4);
+        var producto5 = Principal.GetProducto("Producto 5", 14990);
+        productos.Add(producto5);
+
+    }
+
+    // async Task Remover(Productos producto)
+    // {
+    //     // if (await JS.Confirm($"Remover {producto.NombreProducto} producto del carrito?"))
+    //     // {
+    //     //     Productos.RemoverProducto(producto);
+    //     // }
+    // }
+}
