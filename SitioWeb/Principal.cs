@@ -19,12 +19,13 @@ public class Principal
     public void AgregarProducto(Productos producto)
     {
         Productos.Add(producto);
-        NotifyStateChanged();
+        AddStateChanged();
     }
 
-    private void NotifyStateChanged() => OnChange?.Invoke(); //CAMBIO DE ESTADO
+    private void AddStateChanged() => OnChange?.Invoke(); //CAMBIO DE ESTADO
+    private void ClearStateChanged() => OnChange?.Invoke(); //CAMBIO DE ESTADO
 
-    
+
     public static Productos GetProducto(int idProducto, int precio)
     {
         var producto = new Productos
@@ -55,6 +56,12 @@ public class Principal
 
     public void Limpiar()
     {
-        Productos = new List<Productos>();
+        var primerosProductos = GetProductos().Take(5).ToList();
+        var filtrados = GetProductos().Where(p => !primerosProductos.Contains(p)).ToList();
+        filtrados.ForEach(producto =>
+        {
+            RemoverProducto(producto);
+        });
+        ClearStateChanged();
     }   
 }

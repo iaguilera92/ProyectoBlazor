@@ -3,7 +3,7 @@
 @inject HttpClient HttpClient
 @inject Principal Principal
 @inject NavigationManager NavigationManager
-@inject IJSRuntime JS
+
 <br />
 <center>
     <div>
@@ -26,7 +26,7 @@
 </center>  
 @code
 {
-        List<Productos> productos = new List<Productos>();
+    List<Productos> productos = new List<Productos>();
 
     protected override async Task OnInitializedAsync()
     {       

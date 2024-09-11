@@ -1,19 +1,26 @@
 ﻿@page "/administracion"
 @inject Principal Principal
-<div class="user-info">   
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<div class="user-info">
     @* UNA VEZ LOGEADO
     <img src="img/user.svg" />
-     <div>
-        <a href="authentication/profile" class="username">ADMINISTRADOR</a>
-        <button class="btn btn-link sign-out">Sign out</button>
+    <div>
+    <a href="authentication/profile" class="username">ADMINISTRADOR</a>
+    <button class="btn btn-link sign-out">Sign out</button>
     </div> *@
     @*<a class="sign-in" href="authentication/register">Registrarse</a>*@
-    <a class="sign-in" @onclick="AgregarProducto">TEST +</a>
-    <a class="sign-in" href="authentication/login">Iniciar Sesión</a>
-</div>
-@code {
 
+    <MostrarAlerta @ref="Alert" />
+    <a class="sign-in clear" @onclick="Limpiar"><i class="fa-solid fa-trash"></i></a>
+    <a class="sign-in add" @onclick="AgregarProducto">TEST +</a>
+    <a class="sign-in" href="authentication/login" style="width: 140px;height: 46px;">Iniciar Sesión</a>
+</div>
+
+@code {
+    [Parameter] public EventCallback OnEvento { get; set; }
+    private MostrarAlerta Alert;
     public void AgregarProducto()
     {
         var productos = Principal.GetProductos();
@@ -27,6 +34,16 @@
             Principal.AgregarProducto(producto);
         }
     }
+    public void Limpiar()
+    {
+        var productos = Principal.GetProductos();
+        if (productos?.Count > 4)
+        {
+            Principal.Limpiar();
+            OnEvento.InvokeAsync(null);
+            Alert.ShowAlert("Se han eliminado todos los productos menos los principales.", "success");
+        }
+    }    
 }
 <!--CSS-->
 <style>
@@ -75,6 +92,8 @@
         cursor: pointer;
         transition: 0.2s ease-out;
         margin-left: 3px;
+        width: 140px;
+        height: 46px;
     }
 
         a.sign-in:hover {
@@ -82,4 +101,14 @@
             color: #fff2cc;
             border-color: #fff2cc;
         }
+
+        a.clear {
+            width: 69px;
+            height: 46px;
+        }
+
+        a.add {
+            width: 100px;
+            height: 46px;
+        }        
 </style>

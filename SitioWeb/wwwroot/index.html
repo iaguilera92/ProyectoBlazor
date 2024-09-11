@@ -9,30 +9,36 @@
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="css/app.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="SitioWeb.styles.css" rel="stylesheet" />
+
 </head>
 
 <body>
-        <!--CARGANDO-->
-        <div id="cargando" class="loading-bar" style="display:block;"></div>
+    <!--CARGANDO-->
+    <center id="cargando">
+        <img src="https://www.icegif.com/wp-content/uploads/2023/07/icegif-1268.gif" alt="cargando gif" style="margin-bottom: 10%; width: 30%; height:30%" >
+        <div class="loading-bar" style="display:block;"/>
+    </center>
 
-        <!--PRINCIPAL-->
-        <div id="pagePrincipal" style="display:none;">
-            <div id="app"/>
-        </div>
+    <!--PRINCIPAL-->
+    <div id="pagePrincipal" style="display:none;">
+        <div id="app" />
+    </div>
 
-        <script>
-            document.getElementById('pagePrincipal').style.display = 'none';
-            document.body.style.visibility = 'visible';
+    <script>
+        document.getElementById('pagePrincipal').style.display = 'none';
+        document.body.style.visibility = 'visible';
 
-            setTimeout(function () {
-                document.getElementById('cargando').style.display = 'none';
-                document.getElementById('pagePrincipal').style.display = 'block';
-            }, 2500);
-        </script>
+        setTimeout(function () {
+            document.getElementById('cargando').style.display = 'none';
+            document.getElementById('pagePrincipal').style.display = 'block';
+        }, 5500);
+    </script>
 
     <!--AGREGAR ERROR-->
-    <div id="blazor-error-ui">       
+    <div id="blazor-error-ui">
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
 </body>

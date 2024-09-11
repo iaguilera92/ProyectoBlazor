@@ -1,0 +1,14 @@
+﻿@inject IJSRuntime JS
+
+@code {
+    public async Task ShowAlert(string mensaje, string icon)
+    {
+        await JS.InvokeVoidAsync("Swal.fire", new
+        {
+            title = "Productos eliminados",
+            text = mensaje,
+            icon = icon, // Puedes cambiar "success" por "warning", "error", "info", etc.
+            confirmButtonText = "Aceptar"
+        });
+    }
+}
