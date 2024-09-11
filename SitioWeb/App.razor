@@ -4,18 +4,9 @@
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
     <NotFound>
-        <PageTitle>Not found</PageTitle>
+        <PageTitle>Proyecto Blazor</PageTitle>
         <LayoutView Layout="@typeof(MainLayout)">
             <p role="alert">Sorry, there's nothing at this address.</p>
         </LayoutView>
     </NotFound>
 </Router>
-@inject NavigationManager Navigation
-<button @onclick="IrAOtraPagina">Ir a otra página</button>
-
-@code {
-    void IrAOtraPagina()
-    {
-        Navigation.NavigateTo("/home");
-    }
-}

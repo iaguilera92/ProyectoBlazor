@@ -1,0 +1,58 @@
+﻿
+@using Entidades
+@inject HttpClient HttpClient
+@inject Principal Principal
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+<br />
+<center>
+    <div>
+        <ul class="producto-cards">
+            @if (productos is not null)
+            {
+                @foreach (var special in productos)
+                {
+                    <li style="background-image: url('@special.ImageUrl')">
+                        <div class="producto-info">
+                            <span class="title">@special.NombreProducto</span>
+                            @special.Descripcion
+                            <span class="price">@FormatearPesos(special.Valor)</span>
+                        </div>
+                    </li>
+                }
+            }
+        </ul>
+    </div>
+</center>  
+@code
+{
+        List<Productos> productos = new List<Productos>();
+
+    protected override async Task OnInitializedAsync()
+    {       
+        //TEST - PRINCIPAL STOCK
+        var producto1 = Principal.GetProducto(1, 20000);
+        productos.Add(producto1);
+        var producto2 = Principal.GetProducto(2, 15000);
+        productos.Add(producto2);
+        var producto3 = Principal.GetProducto(3, 35000);
+        productos.Add(producto3);
+        var producto4 = Principal.GetProducto(4, 23990);
+        productos.Add(producto4);
+        var producto5 = Principal.GetProducto(5, 14990);
+        productos.Add(producto5);
+
+        Principal.Productos = productos;
+        Principal.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        Principal.OnChange -= StateHasChanged;
+    }
+    private string FormatearPesos(decimal valor)
+    {
+        var valorPesos = valor.ToString("N0", new System.Globalization.CultureInfo("es-CL"));
+        return $"${valorPesos}";
+    }
+}

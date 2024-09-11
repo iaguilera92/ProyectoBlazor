@@ -1,5 +1,5 @@
 ﻿@page "/administracion"
-
+@inject Principal Principal
 <div class="user-info">   
 
     @* UNA VEZ LOGEADO
@@ -9,16 +9,23 @@
         <button class="btn btn-link sign-out">Sign out</button>
     </div> *@
     @*<a class="sign-in" href="authentication/register">Registrarse</a>*@
-    <a class="sign-in" @onclick="Test">TEST +</a>
+    <a class="sign-in" @onclick="AgregarProducto">TEST +</a>
     <a class="sign-in" href="authentication/login">Iniciar Sesión</a>
 </div>
-
 @code {
-    //[Parameter, EditorRequired] public EventCallback AgregarProducto { get; set; }
-    void Test()
+
+    public void AgregarProducto()
     {
-        var producto = Principal.GetProducto("Producto 6", 3500);
-        Principal.Productos.Add(producto);
+        var productos = Principal.GetProductos();
+        if (productos?.Count > 0)
+        {
+            var ultimoId = productos.LastOrDefault().IdProducto + 1;
+
+            Random random = new Random();
+            int numeroRandom = random.Next(10000, 50001);
+            var producto = Principal.GetProducto(ultimoId, numeroRandom);
+            Principal.AgregarProducto(producto);
+        }
     }
 }
 <!--CSS-->
