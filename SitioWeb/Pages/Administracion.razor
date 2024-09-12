@@ -1,8 +1,5 @@
 ﻿@page "/administracion"
 @inject Principal Principal
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
 <div class="user-info">
     @* UNA VEZ LOGEADO
     <img src="img/user.svg" />
@@ -13,7 +10,26 @@
     @*<a class="sign-in" href="authentication/register">Registrarse</a>*@
 
     <MostrarAlerta @ref="Alert" />
-    <a class="sign-in clear" @onclick="Limpiar"><i class="fa-solid fa-trash"></i></a>
+@*     <div id="cart" class="cart" data-totalitems="0">
+        <i class="fas fa-shopping-cart"></i>
+    </div> *@
+
+    <div class="shopping">
+        <div id="cart" class="cart" data-totalitems="0">
+            <i class="fas fa-shopping-cart"></i>
+        </div>        
+        <span class="quantity">
+            @if (Principal.Carrito?.Productos.Count > 0)
+            {
+                @Principal.Carrito.Productos.Count
+            }   
+            else
+            {
+                @(0) //DEFAULT
+            }
+        </span>
+    </div>
+    <a class="sign-in clear" @onclick="Limpiar"><i class="fa-solid fa-trash" style="font-size:21px"></i></a>
     <a class="sign-in add" @onclick="AgregarProducto">TEST +</a>
     <a class="sign-in" href="authentication/login" style="width: 140px;height: 46px;">Iniciar Sesión</a>
 </div>
@@ -30,7 +46,8 @@
 
             Random random = new Random();
             int numeroRandom = random.Next(10000, 50001);
-            var producto = Principal.GetProducto(ultimoId, numeroRandom);
+            int stockRandom = random.Next(1, 10);
+            var producto = Principal.GetProducto(ultimoId, numeroRandom, stockRandom);
             Principal.AgregarProducto(producto);
         }
     }
@@ -41,12 +58,48 @@
         {
             Principal.Limpiar();
             OnEvento.InvokeAsync(null);
-            Alert.ShowAlert("Se han eliminado todos los productos menos los principales.", "success");
+            Alert.ShowAlert("Productos Eliminados","Se han eliminado todos los productos menos los principales.", "success");
+        }
+        else if(productos?.Count == 4)
+        {
+            Alert.ShowAlert("Informativo", "No se ha podido eliminar los productos, los productos principales no se eliminan.", "warning");
         }
     }    
+    protected override void OnInitialized()
+    {
+        // Suscribirse al evento de cambio para actualizar el componente
+        Principal.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        // Desuscribirse del evento para evitar fugas de memoria
+        Principal.OnChange -= StateHasChanged;
+    }
 }
 <!--CSS-->
 <style>
+    .shopping {
+        position: relative;
+        text-align: right;
+    }
+
+        .shopping img {
+            width: 40px;
+        }
+
+        .shopping span {
+            background: red;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            position: absolute;
+            top: -5px;
+            left: 60%;
+            padding: 3px 10px;
+        }
     .user-info {
         margin-left: auto;
         display: flex;
@@ -108,7 +161,7 @@
         }
 
         a.add {
-            width: 100px;
+            width: 95px;
             height: 46px;
         }        
 </style>

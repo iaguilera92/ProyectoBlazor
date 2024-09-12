@@ -17,30 +17,7 @@
 
             <Administracion />
         </div>       
-        <MostrarAlerta @ref="Alert" />
-
         <Index />
-        <br />
-        <button class="btn btn-primary" @onclick="ShowAlert">Mostrar Alerta DIRECTO</button>
-        @code {
-            private MostrarAlerta Alert;
-            private async Task ShowAlertInIndex()
-            {
-                await Alert.ShowAlert("ESTA ALERTA ES POR EVENTO", "success");
-            }
-        }
-
-        @code {
-            public void ShowAlert()
-            {
-                JS.InvokeVoidAsync("Swal.fire", new
-                {
-                    title = "Productos eliminados",
-                    text = "Se han eliminado todos los productos menos los principales.",
-                    icon = "success", // Puedes cambiar "success" por "warning", "error", "info", etc.
-                    confirmButtonText = "Aceptar"
-                });
-            }
-        }
+        <br />    
     </main>
 </div>

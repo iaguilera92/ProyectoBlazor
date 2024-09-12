@@ -4,21 +4,38 @@
 @inject Principal Principal
 @inject NavigationManager NavigationManager
 
+<link rel="stylesheet" href="css/productos.css" />
 <br />
 <center>
+    <MostrarAlerta @ref="Alert" />
     <div>
         <ul class="producto-cards">
             @if (productos is not null)
             {
-                @foreach (var special in productos)
+                @foreach (var producto in productos)
                 {
-                    <li style="background-image: url('@special.ImageUrl')">
+                    <li style="background-image: url('@producto.ImageUrl');">
                         <div class="producto-info">
-                            <span class="title">@special.NombreProducto</span>
-                            @special.Descripcion
-                            <span class="price">@FormatearPesos(special.Valor)</span>
+                            <span class="title">@producto.NombreProducto</span>
+                            @producto.Descripcion
+                            <span class="price">@FormatearPesos(producto.Valor)</span>
                         </div>
-                    </li>
+                        <div class="page-wrapper">
+                            <button style="margin-top:194px; cursor:pointer" class="add-to-cart" @onclick="() => AgregarCarrito(producto)">
+                                Agregar carrito
+                                <span class="quantity">
+                                    @if (@producto.Stock > 0)
+                                    {
+                                        @producto.Stock.ToString()
+                                    }
+                                    else
+                                    {
+                                        @(0)//DEFAULT
+                                    }
+                                </span>
+                            </button>
+                        </div>
+                    </li>                   
                 }
             }
         </ul>
@@ -27,20 +44,20 @@
 @code
 {
     List<Productos> productos = new List<Productos>();
+    Order Carrito = new Order();
+    private MostrarAlerta Alert;
 
     protected override async Task OnInitializedAsync()
     {       
         //TEST - PRINCIPAL STOCK
-        var producto1 = Principal.GetProducto(1, 20000);
+        var producto1 = Principal.GetProducto(1, 20000, 2);
         productos.Add(producto1);
-        var producto2 = Principal.GetProducto(2, 15000);
+        var producto2 = Principal.GetProducto(2, 15000, 2);
         productos.Add(producto2);
-        var producto3 = Principal.GetProducto(3, 35000);
+        var producto3 = Principal.GetProducto(3, 35000, 3);
         productos.Add(producto3);
-        var producto4 = Principal.GetProducto(4, 23990);
-        productos.Add(producto4);
-        var producto5 = Principal.GetProducto(5, 14990);
-        productos.Add(producto5);
+        var producto4 = Principal.GetProducto(4, 23990, 4);
+        productos.Add(producto4);        
 
         Principal.Productos = productos;
         Principal.OnChange += StateHasChanged;
@@ -54,5 +71,20 @@
     {
         var valorPesos = valor.ToString("N0", new System.Globalization.CultureInfo("es-CL"));
         return $"${valorPesos}";
+    }
+    public void AgregarCarrito(Productos producto)
+    {
+        if (producto.Stock > 0)
+        {
+            Principal.Carrito = Carrito;
+            Principal.Carrito.Productos.Add(producto);
+
+            Principal.AgregarCarrito(Principal.Carrito);
+            producto.Stock--;
+        }
+        else
+        {
+            Alert.ShowAlert("Sin Stock", "El producto seleccionado no tiene más stock, esperar que el administrador ingrese más.", "warning");
+        }
     }
 }

@@ -7,8 +7,7 @@ public class Principal
     public bool ShowingConfigureDialog { get; set; }
 
     public static List<Productos> Productos { get; set; }
-
-    public Order Order { get; set; } = new Order();
+    public static Order Carrito { get; set; }
     public event Action OnChange; //INYECCIÓN DE DEPENDENCIAS
     //TEST
     public List<Productos> GetProductos()
@@ -24,16 +23,18 @@ public class Principal
 
     private void AddStateChanged() => OnChange?.Invoke(); //CAMBIO DE ESTADO
     private void ClearStateChanged() => OnChange?.Invoke(); //CAMBIO DE ESTADO
+    private void AddCartChanged() => OnChange?.Invoke();
 
 
-    public static Productos GetProducto(int idProducto, int precio)
+    public static Productos GetProducto(int idProducto, int precio, int stock = 1)
     {
         var producto = new Productos
         {
             IdProducto = idProducto,
             NombreProducto = $"Producto {idProducto}",
             Descripcion = "Esta es una descripción del producto en stock, click para agregar al carrito.",
-            Valor = precio
+            Valor = precio,
+            Stock = stock
             //ImageUrl = "https://t1.gstatic.com/licensed-image?q=tbn:ANd9GcSVhJ46pOBVylg5_ZnYilSr14xSgJwSZ386f8C6hRKrA0MRiCpn2ozG-Bfcxa3bSdJ-",               
         };
         return producto;
@@ -56,12 +57,21 @@ public class Principal
 
     public void Limpiar()
     {
-        var primerosProductos = GetProductos().Take(5).ToList();
+        var primerosProductos = GetProductos().Take(4).ToList();
         var filtrados = GetProductos().Where(p => !primerosProductos.Contains(p)).ToList();
         filtrados.ForEach(producto =>
         {
             RemoverProducto(producto);
         });
+        if (Carrito != null)
+        {
+            Carrito.Productos.Clear();
+        }
         ClearStateChanged();
     }   
+    public void AgregarCarrito(Order carrito)
+    {
+        Carrito = carrito;
+        AddCartChanged();
+    }
 }
