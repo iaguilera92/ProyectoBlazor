@@ -186,15 +186,15 @@ h1:focus {
 
 .producto-info .price-old {
     position: absolute;
-    bottom: 0.5rem;
+    bottom: 2.7rem;
     right: 1rem;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 700;
     padding: 0rem 0.7rem;
     border-radius: 4px;
-    background-color: red;
+    background-color: gray;
     color: white;
-    line-height: 2rem;
+    line-height: 1.4rem;
 }
 /*DISEÑO STOCK*/
 .stocks {

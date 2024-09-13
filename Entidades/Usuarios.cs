@@ -1,6 +1,6 @@
 ﻿namespace Entidades
 {
-    internal class Usuarios
+    public class Usuarios
     {
         public int IdUsuario { get; set; }
         public string NombreUsuario {get; set;}

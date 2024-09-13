@@ -1,4 +1,5 @@
 ﻿using Entidades;
+using static System.Net.WebRequestMethods;
 
 namespace SitioWeb;
 
@@ -9,6 +10,7 @@ public class Principal
     public static List<Productos> Productos { get; set; }
     public static Order Carrito { get; set; }
     public event Action OnChange; //INYECCIÓN DE DEPENDENCIAS
+    public Usuarios Usuario { get; set; }
     //TEST
     public List<Productos> GetProductos()
     {
@@ -26,20 +28,37 @@ public class Principal
     private void AddCartChanged() => OnChange?.Invoke();
 
 
-    public static Productos GetProducto(int idProducto, int precio, int stock = 1)
+    public static Productos GetProducto(int idProducto, int precio, int imgUrl, int stock = 1)
     {
+        var url = ImgUrlAleatorio(imgUrl);
         var producto = new Productos
         {
             IdProducto = idProducto,
             NombreProducto = $"Producto {idProducto}",
             Descripcion = "Esta es una descripción del producto en stock, click para agregar al carrito.",
             Valor = precio,
-            Stock = stock
-            //ImageUrl = "https://t1.gstatic.com/licensed-image?q=tbn:ANd9GcSVhJ46pOBVylg5_ZnYilSr14xSgJwSZ386f8C6hRKrA0MRiCpn2ozG-Bfcxa3bSdJ-",               
+            Stock = stock,
+            ImageUrl = url
         };
         return producto;
     }
-
+    private static string ImgUrlAleatorio(int imgUrl)
+    {
+        string url = "https://emprendepyme.net/wp-content/uploads/2023/03/comercializar-productos.jpg";
+        if (imgUrl == 2)
+        {
+            url = "https://www.hostingplus.cl/wp-content/uploads/2023/08/Importancia-del-carrito-de-compra.jpg";
+        }
+        else if (imgUrl == 3)
+        {
+            url = "https://logistica360.pe/wp-content/uploads/2023/11/compras-inte.jpg";
+        }
+        else if (imgUrl == 4)
+        {
+            url = "https://www.ticobuycr.com/wp-content/uploads/2021/04/venta-por-internet_1.jpg";
+        }
+        return url;
+    }
     public void CancelarConfiguracion()
     {
         ShowingConfigureDialog = false;
@@ -78,5 +97,5 @@ public class Principal
     {
         Carrito = carrito;
         AddCartChanged();
-    }
+    }   
 }

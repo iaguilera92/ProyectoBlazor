@@ -41,11 +41,11 @@
             timer = 2500
         });
     }
-    public async Task CustomAlert(string titulo, string mensaje, string icono, Order carrito)
+    public async Task CustomAlert(string titulo, string mensaje, string icono, Order carrito, string imgUrl)
     {
         await JS.InvokeVoidAsync("Swal.fire", new
         {
-            html = HtmlCarrito(titulo, mensaje, carrito),
+            html = HtmlCarrito(titulo, mensaje, carrito, imgUrl),
             position = "top-end",
             showClass = new
             {
@@ -69,14 +69,14 @@
             }
         });
     }
-    public string HtmlCarrito(string titulo, string mensaje, Order carrito)
+    public string HtmlCarrito(string titulo, string mensaje, Order carrito, string imgUrl)
     {
         var totalCarrito = carrito.Productos.Sum(p => p.Valor);
         var totalCarritoPesos = totalCarrito.ToString("N0", new System.Globalization.CultureInfo("es-CL"));
 
         string html = $@"
         <center>
-            <img src='https://emprendepyme.net/wp-content/uploads/2023/03/comercializar-productos.jpg'
+            <img src='{imgUrl}'
                  style='width:400px; height:300px; margin-bottom:20px;'>
             <h2>{titulo}</h2>
             <img src='https://media.tenor.com/WsmiS-hUZkEAAAAj/verify.gif' style='margin-bottom:20px;'>
@@ -99,7 +99,7 @@
             imageWidth: 160,
             imageHeight: 160, 
             showCancelButton: true,
-            confirmButtonText: 'Confirmo <i class="fa-solid fa-trash">',
+            confirmButtonText: 'Limpiar carrito  <i class="fa-solid fa-trash"> ',
             cancelButtonText: 'Seguir comprando',
             customClass: {
                 confirmButton: 'btn btn-danger', 

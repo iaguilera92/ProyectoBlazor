@@ -15,9 +15,11 @@
                 {
                     <li style="background-image: url('@producto.ImageUrl');">
                         <div class="producto-info">
+                            @* NOMBRE PRODUCTO *@
                             <span class="title">@producto.NombreProducto</span>
                             @producto.Descripcion
-                            <span class="price-old">$30.000</span>
+                            @* VALORES *@
+                            <span class="price-old"><s>$@CalcularValorOld(producto.Valor)</s></span>
                             <span class="price">@FormatearPesos(producto.Valor)</span>
                         </div>
                         <div class="page-wrapper">
@@ -26,24 +28,24 @@
                                 <i class="fas fa-shopping-cart"/>
                             </button>
                            <div class="producto-stock" title="Cantidad de productos en venta">
-                            <div class="stocks" >
-                                @if (@producto.Stock >= 10)
-                                {
-                                    <span class="stock-verde" >
-                                        @producto.Stock.ToString()
-                                    </span>
-                                }
-                                else if (@producto.Stock > 0 && @producto.Stock < 10)
-                                {
-                                    <span class="stock-naranjo">
-                                        @producto.Stock.ToString()
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="stock-rojo">@producto.Stock.ToString()</span>
-                                }
-                            </div>
+                                <div class="stocks" >
+                                    @if (@producto.Stock >= 10)
+                                    {
+                                        <span class="stock-verde" >
+                                            @producto.Stock.ToString()
+                                        </span>
+                                    }
+                                    else if (@producto.Stock > 0 && @producto.Stock < 10)
+                                    {
+                                        <span class="stock-naranjo">
+                                            @producto.Stock.ToString()
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="stock-rojo">@producto.Stock.ToString()</span>
+                                    }
+                                </div>
                             </div>
                         </div>
                      </li>
@@ -61,13 +63,13 @@
     protected override async Task OnInitializedAsync()
     {       
         //TEST - PRINCIPAL STOCK
-        var producto1 = Principal.GetProducto(1, 20000, 2);
+        var producto1 = Principal.GetProducto(1, 20000, 1, 2);
         productos.Add(producto1);
-        var producto2 = Principal.GetProducto(2, 15000, 10);
+        var producto2 = Principal.GetProducto(2, 15000, 2, 10);
         productos.Add(producto2);
-        var producto3 = Principal.GetProducto(3, 35000, 3);
+        var producto3 = Principal.GetProducto(3, 35000, 3, 3);
         productos.Add(producto3);
-        var producto4 = Principal.GetProducto(4, 23990, 4);
+        var producto4 = Principal.GetProducto(4, 23990, 4, 4);
         productos.Add(producto4);        
 
         Principal.Productos = productos;
@@ -93,11 +95,17 @@
             Principal.AgregarCarrito(Principal.Carrito);
             producto.Stock--;
 
-            Alert.CustomAlert($"Se agrego {producto.NombreProducto} al carrito! 🛒", FormatearPesos(producto.Valor), "success", Carrito);
+            Alert.CustomAlert($"Se agrego {producto.NombreProducto} al carrito! 🛒", FormatearPesos(producto.Valor), "success", Carrito, producto.ImageUrl);
         }
         else
         {
             Alert.ShowAlert("Sin Stock", "El producto seleccionado no tiene más stock, esperar que el administrador ingrese más.", "warning");
         }
+    }
+
+    public string CalcularValorOld(decimal valorProducto)
+    {
+        var valorOld = valorProducto + 10000;
+        return $"{valorOld.ToString("N0", new System.Globalization.CultureInfo("es-CL"))}";
     }
 }

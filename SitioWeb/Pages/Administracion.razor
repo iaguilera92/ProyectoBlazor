@@ -16,7 +16,7 @@
     
     <a @ref="elementLimpiar" id="LimpiarAdmin" class="sign-in clear hidden" @onclick="Limpiar"><i class="fa-solid fa-trash" style="font-size:21px"></i></a>
     <a class="sign-in add" @onclick="AgregarProducto">TEST +</a>
-    <a class="sign-in" href="authentication/login" style="width: 140px;height: 46px;">Iniciar Sesión</a>
+    <a class="sign-in" href="login" style="width: 140px;height: 46px;">Iniciar Sesión</a>
 
     @* CARRITO *@
     <div class="shopping" title="Click para visualizar el carrito" @onclick="Carrito">
@@ -52,7 +52,8 @@
             Random random = new Random();
             int numeroRandom = random.Next(10000, 50001);
             int stockRandom = random.Next(3, 15);
-            var producto = Principal.GetProducto(ultimoId, numeroRandom, stockRandom);
+            int imgRandom = random.Next(1, 4);
+            var producto = Principal.GetProducto(ultimoId, numeroRandom, imgRandom, stockRandom);
             JS.InvokeVoidAsync("mostrarLimpiar", elementLimpiar);
             Principal.AgregarProducto(producto);
             
