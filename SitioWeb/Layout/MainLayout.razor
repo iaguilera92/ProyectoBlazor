@@ -3,6 +3,8 @@
 @inherits LayoutComponentBase
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
+
+
 <div class="page">
     <main>
         <div class="top-row px-4">
@@ -14,10 +16,27 @@
                 <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" width="45" height="45" alt="img" />
             <div>Inicio</div>
             </a>
-
+            <a class="nav-tab" style="margin-left: -0.4rem;" @onclick="OtrosProductos">
+                <img src="https://cdn.icon-icons.com/icons2/2596/PNG/512/ad_product_icon_155850.png" width="45" height="45" alt="img" />
+                <div>Otros Productos</div>
+            </a>
+            <a class="nav-tab" style="margin-left: -0.4rem;" @onclick="OtrosProductos">
+                <img src="https://www.iconpacks.net/icons/1/free-users-icon-267-thumb.png" width="45" height="45" alt="img" />
+                <div>Nosotros</div>
+            </a>
             <Administracion />
         </div>       
         <Index />
+        <MostrarAlerta @ref="Alert" />
         <br />    
     </main>
 </div>
+@code {
+    private MostrarAlerta Alert { get; set; }
+
+
+    private void OtrosProductos(MouseEventArgs e)
+    {
+        Alert.DefaultAlert("EN CONSTRUCCIÓN", "", "warning");
+    }
+}

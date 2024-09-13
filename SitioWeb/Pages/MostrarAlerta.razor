@@ -1,4 +1,5 @@
-﻿@inject IJSRuntime JS
+﻿@using Entidades
+@inject IJSRuntime JS
 
 @code {
     public async Task ShowAlert(string titulo, string mensaje, string icono)
@@ -11,4 +12,125 @@
             confirmButtonText = "Aceptar"
         });
     }
+
+    public async Task<bool> ConfirmAlert(string titulo, string mensaje, string icono)
+    {
+        // Llama a la función JavaScript y espera la respuesta
+        bool isConfirmed = await JS.InvokeAsync<bool>("ConfirmAlert",titulo,mensaje,icono);
+
+        if (isConfirmed)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public async Task DefaultAlert(string titulo, string mensaje, string icono)
+    {
+        await JS.InvokeVoidAsync("Swal.fire", new
+        {
+            position = "center",
+            imageUrl = "https://i.gifer.com/1FA.gif",
+            imageWidth = 320,
+            imageHeight = 270,
+            title = titulo,
+            text = mensaje,
+            showConfirmButton = false,
+            timer = 2500
+        });
+    }
+    public async Task CustomAlert(string titulo, string mensaje, string icono, Order carrito)
+    {
+        await JS.InvokeVoidAsync("Swal.fire", new
+        {
+            html = HtmlCarrito(titulo, mensaje, carrito),
+            position = "top-end",
+            showClass = new
+            {
+                popup = "animate__animated animate__fadeInRight animate__faster"
+            },
+            hideClass = new
+            {
+                popup = "animate__animated animate__fadeOutRight animate__faster"
+            },
+            grow = "column",
+            width = "30%", // Ajuste dinámico al 90% del ancho de la pantalla   
+            showConfirmButton = false,
+            showCloseButton = true,
+            background = "rgb(0 0 0 / 77%)", //FONDO SWAL
+            color = "#ffffff", // COLOR LETRA
+            timer = 1500,
+            customClass = new
+            {
+                title = "swal-title", // CSS DE ACÁ
+                image = "swal-image" // CSS DE ACÁ
+            }
+        });
+    }
+    public string HtmlCarrito(string titulo, string mensaje, Order carrito)
+    {
+        var totalCarrito = carrito.Productos.Sum(p => p.Valor);
+        var totalCarritoPesos = totalCarrito.ToString("N0", new System.Globalization.CultureInfo("es-CL"));
+
+        string html = $@"
+        <center>
+            <img src='https://emprendepyme.net/wp-content/uploads/2023/03/comercializar-productos.jpg'
+                 style='width:400px; height:300px; margin-bottom:20px;'>
+            <h2>{titulo}</h2>
+            <img src='https://media.tenor.com/WsmiS-hUZkEAAAAj/verify.gif' style='margin-bottom:20px;'>
+            <br>
+            <span class='price'>Valor: {mensaje}</span>
+            <h3></h3>
+            <h3>Cantidad en carrito: {carrito.Productos.Count}</h3>
+            <h3>Total carrito: ${totalCarritoPesos}</h3>
+        </center>";
+
+        return html;
+    }
 }
+<script>
+    function ConfirmAlert(titulo, mensaje, icono) {
+        return Swal.fire({
+            title: titulo,
+            text: "",
+            imageUrl: "https://cdn-icons-png.flaticon.com/512/5952/5952781.png",
+            imageWidth: 160,
+            imageHeight: 160, 
+            showCancelButton: true,
+            confirmButtonText: 'Confirmo <i class="fa-solid fa-trash">',
+            cancelButtonText: 'Seguir comprando',
+            customClass: {
+                confirmButton: 'btn btn-danger', 
+                cancelButton: 'btn btn-secondary' 
+            }
+        }).then(result => {
+            return result.isConfirmed;
+        });
+    }
+</script>
+<style>
+    .swal-title {
+        margin-top: -11rem;
+        height: 180px;
+    }
+
+    .swal-image {
+        margin-top: -5rem;
+    }
+
+    .swal2-html-container .price {
+        bottom: 0.5rem;
+        right: 1rem;
+        font-size: 2.5rem;
+        font-weight: 700;
+        padding: 0rem 0.7rem;
+        border-radius: 4px;
+        background-color: #08af08;
+        color: white;
+        line-height: 2rem;
+        margin-top: -12rem !important;
+    }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4/animate.min.css" />

@@ -4,7 +4,6 @@
 @inject Principal Principal
 @inject NavigationManager NavigationManager
 
-<link rel="stylesheet" href="css/productos.css" />
 <br />
 <center>
     <MostrarAlerta @ref="Alert" />
@@ -18,24 +17,36 @@
                         <div class="producto-info">
                             <span class="title">@producto.NombreProducto</span>
                             @producto.Descripcion
+                            <span class="price-old">$30.000</span>
                             <span class="price">@FormatearPesos(producto.Valor)</span>
                         </div>
                         <div class="page-wrapper">
                             <button style="margin-top:194px; cursor:pointer" class="add-to-cart" @onclick="() => AgregarCarrito(producto)">
                                 Agregar carrito
-                                <span class="quantity">
-                                    @if (@producto.Stock > 0)
-                                    {
-                                        @producto.Stock.ToString()
-                                    }
-                                    else
-                                    {
-                                        @(0)//DEFAULT
-                                    }
-                                </span>
+                                <i class="fas fa-shopping-cart"/>
                             </button>
+                           <div class="producto-stock" title="Cantidad de productos en venta">
+                            <div class="stocks" >
+                                @if (@producto.Stock >= 10)
+                                {
+                                    <span class="stock-verde" >
+                                        @producto.Stock.ToString()
+                                    </span>
+                                }
+                                else if (@producto.Stock > 0 && @producto.Stock < 10)
+                                {
+                                    <span class="stock-naranjo">
+                                        @producto.Stock.ToString()
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="stock-rojo">@producto.Stock.ToString()</span>
+                                }
+                            </div>
+                            </div>
                         </div>
-                    </li>                   
+                     </li>
                 }
             }
         </ul>
@@ -52,7 +63,7 @@
         //TEST - PRINCIPAL STOCK
         var producto1 = Principal.GetProducto(1, 20000, 2);
         productos.Add(producto1);
-        var producto2 = Principal.GetProducto(2, 15000, 2);
+        var producto2 = Principal.GetProducto(2, 15000, 10);
         productos.Add(producto2);
         var producto3 = Principal.GetProducto(3, 35000, 3);
         productos.Add(producto3);
@@ -81,6 +92,8 @@
 
             Principal.AgregarCarrito(Principal.Carrito);
             producto.Stock--;
+
+            Alert.CustomAlert($"Se agrego {producto.NombreProducto} al carrito! 🛒", FormatearPesos(producto.Valor), "success", Carrito);
         }
         else
         {

@@ -1,6 +1,9 @@
 ﻿@page "/administracion"
 @inject Principal Principal
+@inject IJSRuntime JS
+
 <div class="user-info">
+
     @* UNA VEZ LOGEADO
     <img src="img/user.svg" />
     <div>
@@ -10,33 +13,35 @@
     @*<a class="sign-in" href="authentication/register">Registrarse</a>*@
 
     <MostrarAlerta @ref="Alert" />
-@*     <div id="cart" class="cart" data-totalitems="0">
-        <i class="fas fa-shopping-cart"></i>
-    </div> *@
+    
+    <a @ref="elementLimpiar" id="LimpiarAdmin" class="sign-in clear hidden" @onclick="Limpiar"><i class="fa-solid fa-trash" style="font-size:21px"></i></a>
+    <a class="sign-in add" @onclick="AgregarProducto">TEST +</a>
+    <a class="sign-in" href="authentication/login" style="width: 140px;height: 46px;">Iniciar Sesión</a>
 
-    <div class="shopping">
+    @* CARRITO *@
+    <div class="shopping" title="Click para visualizar el carrito" @onclick="Carrito">
         <div id="cart" class="cart" data-totalitems="0">
             <i class="fas fa-shopping-cart"></i>
-        </div>        
-        <span class="quantity">
+        </div>
+        <span class="stock-rojo">
             @if (Principal.Carrito?.Productos.Count > 0)
             {
                 @Principal.Carrito.Productos.Count
-            }   
+            }
             else
             {
-                @(0) //DEFAULT
+                //DEFAULT
+                @(0)
             }
         </span>
     </div>
-    <a class="sign-in clear" @onclick="Limpiar"><i class="fa-solid fa-trash" style="font-size:21px"></i></a>
-    <a class="sign-in add" @onclick="AgregarProducto">TEST +</a>
-    <a class="sign-in" href="authentication/login" style="width: 140px;height: 46px;">Iniciar Sesión</a>
 </div>
 
 @code {
     [Parameter] public EventCallback OnEvento { get; set; }
     private MostrarAlerta Alert;
+    private ElementReference elementLimpiar;
+
     public void AgregarProducto()
     {
         var productos = Principal.GetProductos();
@@ -46,22 +51,46 @@
 
             Random random = new Random();
             int numeroRandom = random.Next(10000, 50001);
-            int stockRandom = random.Next(1, 10);
+            int stockRandom = random.Next(3, 15);
             var producto = Principal.GetProducto(ultimoId, numeroRandom, stockRandom);
+            JS.InvokeVoidAsync("mostrarLimpiar", elementLimpiar);
             Principal.AgregarProducto(producto);
+            
         }
     }
-    public void Limpiar()
+    public async Task Limpiar()
     {
         var productos = Principal.GetProductos();
-        if (productos?.Count > 4)
+        if (productos?.Count > 4 || Principal.Carrito?.Productos.Count > 0)
         {
-            Principal.Limpiar();
-            OnEvento.InvokeAsync(null);
-            Alert.ShowAlert("Productos Eliminados","Se han eliminado todos los productos menos los principales.", "success");
+            var confirmado = await Alert.ConfirmAlert("¿Estas seguro de vaciar el carrito?", "", "warning");
+            if (confirmado)
+            {
+                if (productos?.Count > 4)
+                {
+                    JS.InvokeVoidAsync("quitarLimpiar", elementLimpiar);
+                    Principal.Limpiar();
+                    
+                    OnEvento.InvokeAsync(null);
+                    Alert.ShowAlert("Productos Eliminados!", "Se han eliminado todos los productos menos los productos principales.", "success");
+                    
+                }
+                else if (Principal.Carrito?.Productos.Count > 0)
+                {
+                    JS.InvokeVoidAsync("quitarLimpiar", elementLimpiar);
+                    Principal.LimpiarCarrito();                    
+                    Alert.ShowAlert("Carrito vaciado!", "Carrito se encuentra sin productos actualmente.", "success");
+                    
+                }
+                else
+                {
+                    Alert.ShowAlert("Informativo", "No se ha podido eliminar los productos, los productos principales no se eliminan.", "warning");
+                }
+            }
         }
-        else if(productos?.Count == 4)
+        else
         {
+            JS.InvokeVoidAsync("quitarLimpiar", elementLimpiar);
             Alert.ShowAlert("Informativo", "No se ha podido eliminar los productos, los productos principales no se eliminan.", "warning");
         }
     }    
@@ -76,92 +105,24 @@
         // Desuscribirse del evento para evitar fugas de memoria
         Principal.OnChange -= StateHasChanged;
     }
+    private void Carrito(MouseEventArgs e)
+    {
+        Alert.DefaultAlert("EN CONSTRUCCIÓN","","warning");
+    }
 }
-<!--CSS-->
-<style>
-    .shopping {
-        position: relative;
-        text-align: right;
+<script>
+    function mostrarLimpiar(element) {
+        if (element) 
+        {
+             element.classList.remove('hidden');
+             element.style.display = 'block';
+        }
     }
-
-        .shopping img {
-            width: 40px;
+    function quitarLimpiar(element) {
+        if (element) 
+        {
+            element.classList.remove('block');
+            element.style.display = 'hidden';
         }
-
-        .shopping span {
-            background: red;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-            position: absolute;
-            top: -5px;
-            left: 60%;
-            padding: 3px 10px;
-        }
-    .user-info {
-        margin-left: auto;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
     }
-
-        .user-info img {
-            margin-right: 0.7rem;
-            width: 2.6rem;
-        }
-
-        .user-info .username {
-            display: block;
-            font-weight: 700;
-            line-height: 0.7rem;
-            margin-top: 0.5rem;
-            color: white;
-            font-size: 1rem;
-        }
-
-        .user-info a {
-            color: #fff2cc;
-            font-size: 0.8rem;
-        }
-
-        .user-info button.sign-out {
-            color: #fff2cc;
-            font-size: 0.8rem;
-            padding: 0;
-        }
-
-    a.sign-in {
-        background: none;
-        border: 1.5px solid white;
-        border-radius: 0.7em;
-        color: white;
-        text-transform: uppercase;
-        padding: 0.8rem 1.6rem 0.7rem 1.6rem;
-        font-family: 'Bahnschrift', Arial, Helvetica, sans-serif;
-        font-weight: 100;
-        cursor: pointer;
-        transition: 0.2s ease-out;
-        margin-left: 3px;
-        width: 140px;
-        height: 46px;
-    }
-
-        a.sign-in:hover {
-            background-color: rgba(255,255,255,0.3);
-            color: #fff2cc;
-            border-color: #fff2cc;
-        }
-
-        a.clear {
-            width: 69px;
-            height: 46px;
-        }
-
-        a.add {
-            width: 95px;
-            height: 46px;
-        }        
-</style>
+</script>

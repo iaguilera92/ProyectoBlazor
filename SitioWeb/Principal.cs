@@ -63,12 +63,17 @@ public class Principal
         {
             RemoverProducto(producto);
         });
+        LimpiarCarrito();
+        ClearStateChanged();
+    }   
+    public void LimpiarCarrito()
+    {
         if (Carrito != null)
         {
             Carrito.Productos.Clear();
         }
         ClearStateChanged();
-    }   
+    }
     public void AgregarCarrito(Order carrito)
     {
         Carrito = carrito;
