@@ -1,0 +1,363 @@
+﻿@using Entidades
+
+@inject Principal Principal
+@inject IJSRuntime JS
+
+<MostrarAlerta @ref="Alert" />
+<!--HTML-->
+<section class="h-100 h-custom" style="background-color: #000000;border-radius: 15px;">
+    <div class="container py-5 h-100" style="max-width: 100%;">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-12">
+                <div class="card card-registration card-registration-2" style="border-radius: 15px;">
+                    <div class="card-body p-0">
+                        <div class="row g-0">
+                            <div class="col-lg-8">
+                                <div class="p-5">
+                                    <!--TITULO CARRITO-->
+                                    <div class="d-flex justify-content-between align-items-center mb-5">
+                                        <h2 class="fw-bold mb-0">Carrito de Compras 🛒</h2>
+                                        <h6 class="mb-0 text-muted">Cantidad de productos @carrito.Productos.Count</h6>
+                                    </div>
+                                    <hr class="my-4" style="margin-bottom:2% !important;">
+
+                                    <!--INCIO PRODUCTO-->
+                                    @if (carrito != null)
+                                    {
+                                        @foreach (var producto in carrito.Productos)
+                                        {
+                                            <div class="row mb-4 d-flex justify-content-between align-items-center" style="width:100% !important">
+                                                @* PRODUCTO RESUMEN *@
+                                                <div style="width:34%">
+                                                    <img src="@producto.ImageUrl" class="img-fluid rounded-3" >
+                                                </div>                                                
+                                                <div style="width:22%">
+                                                    <h6 class="text-muted">@producto.NombreProducto</h6>
+                                                    <h6 class="mb-0">@producto.Descripcion</h6>
+                                                </div>
+                                                @* CANTIDADES *@
+                                                <div style="width:20%; align-items: center; display:flex;">
+                                                    <button data-mdb-button-init data-mdb-ripple-init class="btn btn-link px-2"
+                                                    onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+                                                        <i class="fas fa-minus"></i>
+                                                    </button>
+
+                                                    <input id="form1" min="0" name="quantity" value="1" type="number"
+                                                    class="form-control form-control-sm" />
+
+                                                    <button data-mdb-button-init data-mdb-ripple-init class="btn btn-link px-2"
+                                                    onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                </div>
+                                                @* VALOR *@
+                                                <div style="width:20%; text-align:center;">
+                                                    <h5 class="mb-0">@Principal.FormatearPesos(producto.Valor)</h5>
+                                                </div>
+                                                @* REMOVER *@
+                                                <div style="width:4%">
+                                                    <a href="#!" class="text-muted" @onclick="() => RemoverProducto(producto)"><i class="fas fa-times"></i></a>
+                                                </div>
+                                            </div>      
+                                            <hr class="my-4">
+                                        }
+                                    }
+                                    <!--FIN PRODUCTO-->
+
+
+                                    <div class="pt-5">
+                                        <h6 class="mb-0">
+                                            <a href="#!" class="text-body" @onclick="Close">
+                                                <i class="fas fa-long-arrow-alt-left me-2"></i>Volver
+                                            </a>
+                                        </h6>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--RESUMEN-->
+                            <div class="col-lg-4 bg-body-tertiary">
+                                <div class="p-5">
+                                    <h3 class="fw-bold mb-5 mt-2 pt-1">Resumen 📝</h3>
+                                    <hr class="my-4" style="margin-bottom: 5% !important">
+
+                                    <div class="d-flex justify-content-between mb-4">
+                                        <h6 class="text-uppercase">Productos </h6>
+                                        @if(carrito != null)
+                                        {
+                                            <h6>@Principal.FormatearPesos(carrito.GetPrecioTotal())</h6>
+                                        }
+                                    </div>
+                                    <!--ENVÍO-->
+                                    <div class="d-flex justify-content-between mb-4">
+                                        <h6 class="text-uppercase">Envío delivery</h6>
+                                        <h6>$3.500 - $5.000</h6>
+                                    </div>
+
+                                    <!--DESCUENTOS-->
+                                    <h5 class="mb-3">Descuentos</h5>
+
+                                    <div class="mb-5">
+                                        <div data-mdb-input-init class="form-outline">
+                                            <input type="text" id="form3Examplea2" class="form-control form-control-lg" />
+                                        </div>
+                                    </div>
+
+                                    <hr class="my-4">
+
+                                    <!--TOTAL-->
+                                    <div class="d-flex justify-content-between mb-5">
+                                        <h6 class="text-uppercase">Precio Total:</h6>
+                                        @if(carrito != null)
+                                        {
+                                            <h6 class="fw-bold">@Principal.FormatearPesos(carrito.GetPrecioTotal())</h6>
+                                        }
+                                    </div>
+                                    <br />
+                                    <button class="custom-btn btn-3" @onclick="Checkout"><span>Checkout</span></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--BLAZOR-->
+@code {
+    [CascadingParameter] Blazored.Modal.BlazoredModalInstance ModalInstance { get; set; }
+    Order carrito = new Order();
+    public MostrarAlerta Alert;
+
+    protected override async Task OnInitializedAsync()
+    {        
+        carrito = Principal.GetCarrito();
+    }
+    private async Task Close()
+    {
+        await ModalInstance.CloseAsync();
+    }
+    private void Checkout()
+    {
+        Alert.DefaultAlert("Informativo", "No se ha podido eliminar los productos, los productos principales no se eliminan.", "warning");
+    }
+    private async Task RemoverProducto(Productos producto)
+    {
+        try
+        {
+            if (carrito.Productos.Count > 0)
+            {
+                var confirmado = await Alert.ConfirmAlert($"¿Estas seguro de remover el {producto.NombreProducto}?", "", "warning");
+                if (confirmado)
+                {
+                    if (producto != null && producto.IdProducto != 0)
+                    {
+                        Principal.RemoverProducto(producto);
+                        Alert.ShowAlert("Producto eliminado!", $"Se ha eliminado el {producto.NombreProducto} correctamente!", "success");
+                    }
+                    else
+                    {
+                        Alert.ShowAlert("Informativo", "No se ha podido eliminar los productos, los productos principales no se eliminan.", "warning");
+                    }
+                }
+            }
+            else
+            {
+                Alert.ShowAlert("Informativo", "No se ha podido eliminar los productos, los productos principales no se eliminan.", "warning");
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new NotImplementedException();
+        }        
+    }
+}
+
+
+<style>
+    .mb-4{
+        margin-bottom: 1rem !important;
+    }
+    .my-4{
+        margin-top: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+
+    .mt-2 {
+        margin-top: 0.3rem !important;
+    }
+    .col-xl-2{
+        width: 24% !important;
+    }
+    .size-medium {
+        width: 63% !important;
+        max-width: 100% !important;
+    }
+
+    .bm-header {
+        padding: 0 0 0rem 0 !important;
+    }
+
+    .py-5 {
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
+
+    .bm-close {
+        margin: -2.5rem -1rem -1.5rem auto !important;
+        font-size: 2.5rem !important;
+    }
+
+    .pt-1 {
+        padding-top: 0 !important;
+    }
+
+    .mb-5 {
+        margin-bottom: 1rem !important;
+    }
+
+    .custom-btn {
+        width: 130px;
+        height: 40px;
+        color: #fff;
+        border-radius: 5px;
+        padding: 10px 25px;
+        font-family: 'Lato', sans-serif;
+        font-weight: 500;
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        display: inline-block;
+        box-shadow: inset 2px 2px 2px 0px rgba(255,255,255,.5), 7px 7px 20px 0px rgba(0,0,0,.1), 4px 4px 5px 0px rgba(0,0,0,.1);
+        outline: none;
+    }
+
+    .btn-3 {
+        background: rgb(0,172,238);
+        background: linear-gradient(0deg, rgba(0,172,238,1) 0%, rgba(2,126,251,1) 100%);
+        width: 100%;
+        height: 45px;
+        line-height: 42px;
+        padding: 0;
+        border: none;
+        font-size: 19px;
+    }
+
+        .btn-3 span {
+            position: relative;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .btn-3:before,
+        .btn-3:after {
+            position: absolute;
+            content: "";
+            right: 0;
+            top: 0;
+            background: rgba(2,126,251,1);
+            transition: all 0.6s ease;
+        }
+
+        .btn-3:before {
+            height: 0%;
+            width: 2px;
+        }
+
+        .btn-3:after {
+            width: 0%;
+            height: 2px;
+        }
+
+        .btn-3:hover {
+            background: transparent;
+            box-shadow: none;
+        }
+
+            .btn-3:hover:before {
+                height: 100%;
+            }
+
+            .btn-3:hover:after {
+                width: 100%;
+            }
+
+        .btn-3 span:hover {
+            color: rgba(2,126,251,1);
+        }
+
+        .btn-3 span:before,
+        .btn-3 span:after {
+            position: absolute;
+            content: "";
+            left: 0;
+            bottom: 0;
+            background: rgba(2,126,251,1);
+            transition: all 0.6s ease;
+        }
+
+        .btn-3 span:before {
+            width: 2px;
+            height: 0%;
+        }
+
+        .btn-3 span:after {
+            width: 0%;
+            height: 2px;
+        }
+
+        .btn-3 span:hover:before {
+            height: 100%;
+        }
+
+        .btn-3 span:hover:after {
+            width: 100%;
+        }
+
+    .btn-5 {
+        width: 100%;
+        height: 45px;
+        line-height: 42px;
+        padding: 0;
+        border: none;
+        background: rgb(34, 193, 34); /* Verde inicial */
+        background: linear-gradient(0deg, rgba(34, 193, 34, 1) 0%, rgba(76, 175, 80, 1) 100%); /* Gradiente verde */
+    }
+
+        .btn-5:hover {
+            color: rgb(34, 193, 34);
+            background: transparent;
+            box-shadow: none;
+        }
+
+        .btn-5:before,
+        .btn-5:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 2px;
+            width: 0;
+            font-size: 19px;
+            background: rgb(34, 193, 34);
+            box-shadow: -1px -1px 5px 0px #fff, 7px 7px 20px 0px #0003, 4px 4px 5px 0px #0002;
+            transition: 400ms ease all;
+        }
+
+        .btn-5:after {
+            right: inherit;
+            top: inherit;
+            left: 0;
+            bottom: 0;
+        }
+
+        .btn-5:hover:before,
+        .btn-5:hover:after {
+            width: 100%;
+            transition: 800ms ease all;
+        }
+</style>

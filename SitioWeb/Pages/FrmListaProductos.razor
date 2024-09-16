@@ -20,7 +20,7 @@
                             @producto.Descripcion
                             @* VALORES *@
                             <span class="price-old"><s>$@CalcularValorOld(producto.Valor)</s></span>
-                            <span class="price">@FormatearPesos(producto.Valor)</span>
+                            <span class="price">@Principal.FormatearPesos(producto.Valor)</span>
                         </div>
                         <div class="page-wrapper">
                             <button style="margin-top:194px; cursor:pointer" class="add-to-cart" @onclick="() => AgregarCarrito(producto)">
@@ -80,11 +80,7 @@
     {
         Principal.OnChange -= StateHasChanged;
     }
-    private string FormatearPesos(decimal valor)
-    {
-        var valorPesos = valor.ToString("N0", new System.Globalization.CultureInfo("es-CL"));
-        return $"${valorPesos}";
-    }
+
     public void AgregarCarrito(Productos producto)
     {
         if (producto.Stock > 0)
@@ -94,8 +90,8 @@
 
             Principal.AgregarCarrito(Principal.Carrito);
             producto.Stock--;
-
-            Alert.CustomAlert($"Se agrego {producto.NombreProducto} al carrito! 🛒", FormatearPesos(producto.Valor), "success", Carrito, producto.ImageUrl);
+            var valorTotal = Principal.FormatearPesos(producto.Valor);
+            Alert.CustomAlert($"Se agrego {producto.NombreProducto} al carrito! 🛒", valorTotal, "success", Carrito, producto.ImageUrl);
         }
         else
         {

@@ -1,0 +1,11 @@
+﻿
+
+
+@code {
+    [CascadingParameter] Blazored.Modal.BlazoredModalInstance ModalInstance { get; set; }
+
+    private async Task Close()
+    {
+        await ModalInstance.CloseAsync();
+    }
+}

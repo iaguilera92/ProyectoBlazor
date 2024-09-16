@@ -18,9 +18,9 @@ public class Order
 
     public List<Productos> Productos { get; set; } = new List<Productos>();
 
-    public decimal GetTotalPrice() => Productos.Sum(p => p.GetTotalPrice());
+    public decimal GetPrecioTotal() => Productos.Sum(p => p.Valor);
 
-    public string GetFormattedTotalPrice() => GetTotalPrice().ToString("0.00");
+    public string GetFormattedTotalPrice() => GetPrecioTotal().ToString("0.00");
 }
 
 [JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Default, PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]

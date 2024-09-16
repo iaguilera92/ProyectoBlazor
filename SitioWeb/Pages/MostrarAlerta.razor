@@ -2,7 +2,7 @@
 @inject IJSRuntime JS
 
 @code {
-    public async Task ShowAlert(string titulo, string mensaje, string icono)
+    public async void ShowAlert(string titulo, string mensaje, string icono)
     {
         await JS.InvokeVoidAsync("Swal.fire", new
         {
@@ -27,7 +27,7 @@
             return false;
         }
     }
-    public async Task DefaultAlert(string titulo, string mensaje, string icono)
+    public async void DefaultAlert(string titulo, string mensaje, string icono)
     {
         await JS.InvokeVoidAsync("Swal.fire", new
         {
@@ -56,12 +56,12 @@
                 popup = "animate__animated animate__fadeOutRight animate__faster"
             },
             grow = "column",
-            width = "30%", // Ajuste dinámico al 90% del ancho de la pantalla   
+            width = "32%", // Ajuste dinámico al 90% del ancho de la pantalla   
             showConfirmButton = false,
             showCloseButton = true,
-            background = "rgb(0 0 0 / 77%)", //FONDO SWAL
+            background = "rgb(0 0 0)", //FONDO SWAL
             color = "#ffffff", // COLOR LETRA
-            timer = 1500,
+            timer = 1700,
             customClass = new
             {
                 title = "swal-title", // CSS DE ACÁ
@@ -99,7 +99,7 @@
             imageWidth: 160,
             imageHeight: 160, 
             showCancelButton: true,
-            confirmButtonText: 'Limpiar carrito  <i class="fa-solid fa-trash"> ',
+            confirmButtonText: 'Quitar producto  <i class="fa-solid fa-trash"> ',
             cancelButtonText: 'Seguir comprando',
             customClass: {
                 confirmButton: 'btn btn-danger', 

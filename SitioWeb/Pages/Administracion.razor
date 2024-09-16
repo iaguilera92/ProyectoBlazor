@@ -1,6 +1,8 @@
 ﻿@page "/administracion"
+@using Blazored.Modal
 @inject Principal Principal
 @inject IJSRuntime JS
+@inject Blazored.Modal.Services.IModalService ModalService
 
 <div class="user-info">
 
@@ -36,7 +38,26 @@
         </span>
     </div>
 </div>
-
+@code {
+    public void Carrito()
+    {
+        try        
+        {            
+            if(Principal.Carrito?.Productos?.Count > 0)
+            {
+                ModalService.Show<Carrito>(string.Empty);
+            }
+            else
+            {
+                Alert.ShowAlert("Sin productos seleccionados", $"Primero deberá añadir al carrito un producto para continuar con la compra.", "warning");
+            }
+        }
+         catch (Exception ex)
+         {
+              Alert.DefaultAlert("EN CONSTRUCCIÓN", $"{ex.Message}", "warning");
+         }
+     }
+}
 @code {
     [Parameter] public EventCallback OnEvento { get; set; }
     private MostrarAlerta Alert;
@@ -69,16 +90,16 @@
             {
                 if (productos?.Count > 4)
                 {
-                    JS.InvokeVoidAsync("quitarLimpiar", elementLimpiar);
+                    await JS.InvokeVoidAsync("quitarLimpiar", elementLimpiar);
                     Principal.Limpiar();
                     
-                    OnEvento.InvokeAsync(null);
+                    await OnEvento.InvokeAsync(null);
                     Alert.ShowAlert("Productos Eliminados!", "Se han eliminado todos los productos menos los productos principales.", "success");
                     
                 }
                 else if (Principal.Carrito?.Productos.Count > 0)
                 {
-                    JS.InvokeVoidAsync("quitarLimpiar", elementLimpiar);
+                    await JS.InvokeVoidAsync("quitarLimpiar", elementLimpiar);
                     Principal.LimpiarCarrito();                    
                     Alert.ShowAlert("Carrito vaciado!", "Carrito se encuentra sin productos actualmente.", "success");
                     
@@ -91,7 +112,7 @@
         }
         else
         {
-            JS.InvokeVoidAsync("quitarLimpiar", elementLimpiar);
+            await JS.InvokeVoidAsync("quitarLimpiar", elementLimpiar);
             Alert.ShowAlert("Informativo", "No se ha podido eliminar los productos, los productos principales no se eliminan.", "warning");
         }
     }    
@@ -106,10 +127,10 @@
         // Desuscribirse del evento para evitar fugas de memoria
         Principal.OnChange -= StateHasChanged;
     }
-    private void Carrito(MouseEventArgs e)
-    {
-        Alert.DefaultAlert("EN CONSTRUCCIÓN","","warning");
-    }
+    // private void Carrito(MouseEventArgs e)
+    // {
+    //     Alert.DefaultAlert("EN CONSTRUCCIÓN","","warning");
+    // }
 }
 <script>
     function mostrarLimpiar(element) {

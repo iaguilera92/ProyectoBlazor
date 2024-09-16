@@ -22,7 +22,10 @@ public class Principal
         Productos.Add(producto);
         AddStateChanged();
     }
-
+    public Order GetCarrito()
+    {
+        return Carrito;
+    }
     private void AddStateChanged() => OnChange?.Invoke(); //CAMBIO DE ESTADO
     private void ClearStateChanged() => OnChange?.Invoke(); //CAMBIO DE ESTADO
     private void AddCartChanged() => OnChange?.Invoke();
@@ -71,7 +74,14 @@ public class Principal
 
     public void RemoverProducto(Productos producto)
     {
-        Productos.Remove(producto);
+        if (Carrito.Productos.Any(p => p.IdProducto == producto.IdProducto))
+        {
+            var productoSeleccionado = Carrito.Productos.Where(producto => producto.IdProducto == producto.IdProducto).FirstOrDefault();
+            if (productoSeleccionado != null)
+            {
+                Carrito.Productos.Remove(productoSeleccionado);
+            }
+        }
     }
 
     public void Limpiar()
@@ -97,5 +107,10 @@ public class Principal
     {
         Carrito = carrito;
         AddCartChanged();
-    }   
+    }
+    public string FormatearPesos(decimal valor)
+    {
+        var valorPesos = valor.ToString("N0", new System.Globalization.CultureInfo("es-CL"));
+        return $"${valorPesos}";
+    }
 }
