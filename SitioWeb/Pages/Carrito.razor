@@ -17,7 +17,7 @@
                                     <!--TITULO CARRITO-->
                                     <div class="d-flex justify-content-between align-items-center mb-5">
                                         <h2 class="fw-bold mb-0">Carrito de Compras 🛒</h2>
-                                        <h6 class="mb-0 text-muted">Cantidad de productos @carrito.Productos.Count</h6>
+                                        <h6 class="mb-0 text-muted">Cantidad de productos <span class="cantidad-productos">@carrito.CantidadProductos</span></h6>
                                     </div>
                                     <hr class="my-4" style="margin-bottom:2% !important;">
 
@@ -37,22 +37,20 @@
                                                 </div>
                                                 @* CANTIDADES *@
                                                 <div style="width:20%; align-items: center; display:flex;">
-                                                    <button data-mdb-button-init data-mdb-ripple-init class="btn btn-link px-2"
-                                                    onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+                                                    <button data-mdb-button-init data-mdb-ripple-init class="btn btn-link px-2" @onclick="() => RemoverProducto(producto)">
                                                         <i class="fas fa-minus"></i>
                                                     </button>
 
-                                                    <input id="form1" min="0" name="quantity" value="1" type="number"
-                                                    class="form-control form-control-sm" />
+                                                    <input id="form1" min="0" value="@producto.Cantidad" type="number" disabled="disabled" style="text-align: center;" class="form-control form-control-sm" />
 
                                                     <button data-mdb-button-init data-mdb-ripple-init class="btn btn-link px-2"
-                                                    onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                                                    @onclick="() => AgregarProducto(producto)">
                                                         <i class="fas fa-plus"></i>
                                                     </button>
                                                 </div>
                                                 @* VALOR *@
                                                 <div style="width:20%; text-align:center;">
-                                                    <h5 class="mb-0">@Principal.FormatearPesos(producto.Valor)</h5>
+                                                    <h5 class="mb-0">@Principal.FormatearPesos(producto.ValorCantidad)</h5>
                                                 </div>
                                                 @* REMOVER *@
                                                 <div style="width:4%">
@@ -71,6 +69,11 @@
                                                 <i class="fas fa-long-arrow-alt-left me-2"></i>Volver
                                             </a>
                                         </h6>
+                                        <h6 class="mb-0" style="margin-left:10px" @onclick="RemoverCarrito">
+                                            <a href="#!" class="text-body">
+                                                <i class="fas fa-trash me-1"></i>Vaciar carrito
+                                            </a>
+                                        </h6>
                                     </div>
                                 </div>
                             </div>
@@ -82,7 +85,7 @@
                                     <hr class="my-4" style="margin-bottom: 5% !important">
 
                                     <div class="d-flex justify-content-between mb-4">
-                                        <h6 class="text-uppercase">Productos </h6>
+                                        <h6>Total Productos </h6>
                                         @if(carrito != null)
                                         {
                                             <h6>@Principal.FormatearPesos(carrito.GetPrecioTotal())</h6>
@@ -90,8 +93,11 @@
                                     </div>
                                     <!--ENVÍO-->
                                     <div class="d-flex justify-content-between mb-4">
-                                        <h6 class="text-uppercase">Envío delivery</h6>
-                                        <h6>$3.500 - $5.000</h6>
+                                        <h6>Envío Delivery</h6>
+                                        @if(carrito != null)
+                                        {
+                                            <h6>Entre @Principal.FormatearPesos(carrito.valorDeliveryMin) a @Principal.FormatearPesos(carrito.valorDeliveryMax)</h6>
+                                        }
                                     </div>
 
                                     <!--DESCUENTOS-->
@@ -127,13 +133,20 @@
 
 <!--BLAZOR-->
 @code {
+    //PARAMETROS GENERALES
     [CascadingParameter] Blazored.Modal.BlazoredModalInstance ModalInstance { get; set; }
+    [Parameter] public EventCallback<string> OnEventoCarrito { get; set; }
     Order carrito = new Order();
     public MostrarAlerta Alert;
 
     protected override async Task OnInitializedAsync()
     {        
         carrito = Principal.GetCarrito();
+        Principal.OnChange += StateHasChanged;
+    }
+    public void Dispose()
+    {
+        Principal.OnChange -= StateHasChanged;
     }
     private async Task Close()
     {
@@ -141,7 +154,7 @@
     }
     private void Checkout()
     {
-        Alert.DefaultAlert("Informativo", "No se ha podido eliminar los productos, los productos principales no se eliminan.", "warning");
+        Alert.DefaultAlert("Checkout", "EN CONSTRUCCIÓN", "warning");
     }
     private async Task RemoverProducto(Productos producto)
     {
@@ -154,18 +167,41 @@
                 {
                     if (producto != null && producto.IdProducto != 0)
                     {
-                        Principal.RemoverProducto(producto);
-                        Alert.ShowAlert("Producto eliminado!", $"Se ha eliminado el {producto.NombreProducto} correctamente!", "success");
+                        carrito.CantidadProductos--;
+                        var productoRepetido = carrito.Productos.FirstOrDefault(p => p.IdProducto == producto.IdProducto);
+                        if (productoRepetido?.Cantidad > 1)
+                        {
+                            productoRepetido.ValorCantidad = productoRepetido.ValorCantidad - producto.Valor;
+                            productoRepetido.Cantidad--;
+                        }
+                        else
+                        {                            
+                            Principal.RemoverProducto(producto);
+                        }
+
+                        var productoSeleccionado = Principal.Productos.FirstOrDefault(p => p.IdProducto == producto.IdProducto);
+                        if (productoSeleccionado != null)
+                        {
+                            productoSeleccionado.Stock++; //DEVOLVER STOCK
+                        }
+                        Principal.UpdateCarritoChanged();
+
+                        Alert.ShowAlert("Producto removido!", $"Se ha removido el {producto.NombreProducto} correctamente del carrito!", "success");
+                        if(carrito.CantidadProductos == 0)
+                        {
+                            await Close();
+                            return;
+                        }
                     }
                     else
                     {
-                        Alert.ShowAlert("Informativo", "No se ha podido eliminar los productos, los productos principales no se eliminan.", "warning");
+                        Alert.ShowAlert("Informativo", "No se ha podido remover los productos.", "warning");
                     }
                 }
             }
             else
             {
-                Alert.ShowAlert("Informativo", "No se ha podido eliminar los productos, los productos principales no se eliminan.", "warning");
+                Alert.ShowAlert("Informativo", "No se ha podido eliminar los productos.", "warning");
             }
         }
         catch (Exception ex)
@@ -173,10 +209,91 @@
             throw new NotImplementedException();
         }        
     }
+    private async Task RemoverCarrito()
+    {
+        try
+        {
+            if (carrito.Productos.Count > 0)
+            {
+                var confirmado = await Alert.ConfirmAlert($"¿Estas seguro vaciar el carrito?", "", "warning");
+                if (confirmado)
+                {
+                    carrito.CantidadProductos = 0;
+                    if (carrito.Productos?.Count > 0)
+                    {
+                        carrito.Productos.ForEach(producto =>
+                        {
+                            var productoSeleccionado = Principal.Productos.FirstOrDefault(p => p.IdProducto == producto.IdProducto);
+                            if (productoSeleccionado != null)
+                            {
+                                productoSeleccionado.Stock += producto.Cantidad;
+                                productoSeleccionado.Cantidad = 0;
+                                productoSeleccionado.ValorCantidad = 0;                                
+                            }
+                        });
+                        carrito.Productos.Clear();
+                    }                    
+                    Principal.UpdateCarritoChanged();
+
+                    Alert.ShowAlert("Carrito vaciado!", $"Se han removidos los productos correctamente del carrito!", "success");
+                    if (carrito.CantidadProductos == 0)
+                    {
+                        await Close();
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                Alert.ShowAlert("Informativo", "No se ha podido eliminar los productos.", "warning");
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    private async Task AgregarProducto(Productos producto)
+    {
+        try
+        {
+            if (carrito.Productos.Count > 0)
+            {
+                var confirmado = await Alert.ConfirmAlertGreen($"¿Desea agregar un {producto.NombreProducto} a su compra?", "", "warning", producto.ImageUrl);
+                if (confirmado)
+                {
+                    return;
+                }
+            }
+        }
+        catch (Exception ex)
+        { 
+            throw new NotImplementedException();
+        }
+    }
 }
 
 
 <style>
+    .pt-5{
+        display:flex;
+    }
+    .cantidad-productos {
+        margin-left: 2px;
+        margin-top: -3px;
+        justify-content: center;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        background: green;
+        color: white;
+        border-radius: 50%;
+        padding: 3px 5px 4px 7.5px;
+        width: 25px;
+        height: 25px;
+        display: inline-block;
+    }
+
     .mb-4{
         margin-bottom: 1rem !important;
     }

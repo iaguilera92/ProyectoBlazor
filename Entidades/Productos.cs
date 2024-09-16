@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Entidades;
+﻿namespace Entidades;
 
 public class Productos
 {
@@ -31,8 +29,9 @@ public class Productos
     public int Descuento { get; set; }
     public int Valoracion { get; set; }
     public string Comentario { get; set; }
-
-
+    public int Cantidad { get; set; } = 1;
+    public decimal ValorCantidad { get; set; } = 0;
+    public bool ConDescuento { get; set; }
     public string GetFormattedBasePrice() => Valor.ToString("0.00");
 
 
@@ -51,7 +50,3 @@ public class Productos
         return GetTotalPrice().ToString("0.00");
     }
 }
-
-[JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Serialization)]
-[JsonSerializable(typeof(Productos))]
-public partial class PizzaContext : JsonSerializerContext { }

@@ -1,5 +1,6 @@
 ﻿@page "/administracion"
 @using Blazored.Modal
+@using Entidades
 @inject Principal Principal
 @inject IJSRuntime JS
 @inject Blazored.Modal.Services.IModalService ModalService
@@ -16,53 +17,68 @@
 
     <MostrarAlerta @ref="Alert" />
     
-    <a @ref="elementLimpiar" id="LimpiarAdmin" class="sign-in clear hidden" @onclick="Limpiar"><i class="fa-solid fa-trash" style="font-size:21px"></i></a>
+    @*<a @ref="elementLimpiar" id="LimpiarAdmin" class="sign-in clear hidden" @onclick="Limpiar"><i class="fa-solid fa-trash" style="font-size:21px"></i></a>*@
     <a class="sign-in add" @onclick="AgregarProducto">TEST +</a>
     <a class="sign-in" href="login" style="width: 140px;height: 46px;">Iniciar Sesión</a>
 
     @* CARRITO *@
-    <div class="shopping" title="Click para visualizar el carrito" @onclick="Carrito">
+    <div class="shopping" title="Click para visualizar el carrito" @onclick="AgregarCarrito">
         <div id="cart" class="cart" data-totalitems="0">
             <i class="fas fa-shopping-cart"></i>
         </div>
-        <span class="stock-rojo">
-            @if (Principal.Carrito?.Productos.Count > 0)
-            {
-                @Principal.Carrito.Productos.Count
-            }
-            else
-            {
-                //DEFAULT
-                @(0)
-            }
-        </span>
+        @if (carrito != null && carrito.CantidadProductos != 0)
+         {
+             <span class="stock-rojo">
+                @carrito.CantidadProductos
+             </span>
+         }    
     </div>
 </div>
+
 @code {
-    public void Carrito()
+    [Parameter] public EventCallback OnEvento { get; set; }
+    //[Parameter] public EventCallback<string> OnEventoCarrito { get; set; }
+    private Order carrito;
+    private MostrarAlerta Alert;
+    private ElementReference elementLimpiar;
+
+    protected override async Task OnInitializedAsync()
     {
-        try        
-        {            
-            if(Principal.Carrito?.Productos?.Count > 0)
+        carrito = Principal.GetCarrito();
+        Principal.OnChange += OnProductosChanged; //INICIAR LA ACCIÓN
+    }
+    private void OnProductosChanged()
+    {
+        //ACCIÓN: Cargar el carrito actualizado y gatillar
+        carrito = Principal.GetCarrito();
+        StateHasChanged();
+    }
+    //NECESARIO PARA TERMINAR LA ACCIÓN
+    public void Dispose()
+    {
+        Principal.OnChange -= OnProductosChanged; // Desuscríbete del evento
+    }
+
+    //AGREGAR AL CARRITO
+    public async Task AgregarCarrito()
+    {
+        try
+        {
+            if (Principal.Carrito?.Productos?.Count > 0)
             {
-                ModalService.Show<Carrito>(string.Empty);
+                ModalService.Show<Carrito>();
             }
             else
             {
                 Alert.ShowAlert("Sin productos seleccionados", $"Primero deberá añadir al carrito un producto para continuar con la compra.", "warning");
             }
         }
-         catch (Exception ex)
-         {
-              Alert.DefaultAlert("EN CONSTRUCCIÓN", $"{ex.Message}", "warning");
-         }
-     }
-}
-@code {
-    [Parameter] public EventCallback OnEvento { get; set; }
-    private MostrarAlerta Alert;
-    private ElementReference elementLimpiar;
-
+        catch (Exception ex)
+        {
+            Alert.DefaultAlert("EN CONSTRUCCIÓN", $"{ex.Message}", "warning");
+        }
+    }
+ 
     public void AgregarProducto()
     {
         var productos = Principal.GetProductos();
@@ -115,22 +131,7 @@
             await JS.InvokeVoidAsync("quitarLimpiar", elementLimpiar);
             Alert.ShowAlert("Informativo", "No se ha podido eliminar los productos, los productos principales no se eliminan.", "warning");
         }
-    }    
-    protected override void OnInitialized()
-    {
-        // Suscribirse al evento de cambio para actualizar el componente
-        Principal.OnChange += StateHasChanged;
-    }
-
-    public void Dispose()
-    {
-        // Desuscribirse del evento para evitar fugas de memoria
-        Principal.OnChange -= StateHasChanged;
-    }
-    // private void Carrito(MouseEventArgs e)
-    // {
-    //     Alert.DefaultAlert("EN CONSTRUCCIÓN","","warning");
-    // }
+    }       
 }
 <script>
     function mostrarLimpiar(element) {

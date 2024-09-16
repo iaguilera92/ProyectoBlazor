@@ -13,10 +13,26 @@
         });
     }
 
-    public async Task<bool> ConfirmAlert(string titulo, string mensaje, string icono)
+    public async Task<bool> ConfirmAlert(string titulo, string mensaje, string icono, string img = null)
     {
-        // Llama a la función JavaScript y espera la respuesta
-        bool isConfirmed = await JS.InvokeAsync<bool>("ConfirmAlert",titulo,mensaje,icono);
+        if(img == null)
+        {
+            img = "https://cdn-icons-png.flaticon.com/512/5952/5952781.png";
+        }
+        bool isConfirmed = await JS.InvokeAsync<bool>("ConfirmAlert", titulo, mensaje, icono, img);
+
+        if (isConfirmed)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public async Task<bool> ConfirmAlertGreen(string titulo, string mensaje, string icono, string img)
+    {
+        bool isConfirmed = await JS.InvokeAsync<bool>("ConfirmAlertGreen", titulo, mensaje, icono, img);
 
         if (isConfirmed)
         {
@@ -91,15 +107,15 @@
     }
 }
 <script>
-    function ConfirmAlert(titulo, mensaje, icono) {
+    function ConfirmAlert(titulo, mensaje, icono, img) {
         return Swal.fire({
             title: titulo,
             text: "",
-            imageUrl: "https://cdn-icons-png.flaticon.com/512/5952/5952781.png",
-            imageWidth: 160,
-            imageHeight: 160, 
+            imageUrl: img,
+            imageWidth: 200,
+            imageHeight: 170,
             showCancelButton: true,
-            confirmButtonText: 'Quitar producto  <i class="fa-solid fa-trash"> ',
+            confirmButtonText: 'Remover del carrito  <i class="fa-solid fa-trash"> ',
             cancelButtonText: 'Seguir comprando',
             customClass: {
                 confirmButton: 'btn btn-danger', 
@@ -109,6 +125,24 @@
             return result.isConfirmed;
         });
     }
+    function ConfirmAlertGreen(titulo, mensaje, icono, img) {
+        return Swal.fire({
+            title: titulo,
+            text: "",
+            imageUrl: img,
+            imageWidth: 300,
+            imageHeight: 170,
+            showCancelButton: true,
+            confirmButtonText: 'Agregar producto  <i class="fa-solid fa-plus"> ',
+            cancelButtonText: 'No todavía',
+            customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'btn btn-secondary'
+            }
+        }).then(result => {
+            return result.isConfirmed;
+        });
+     }
 </script>
 <style>
     .swal-title {

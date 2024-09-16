@@ -1,17 +1,26 @@
 ﻿using Entidades;
-using static System.Net.WebRequestMethods;
 
 namespace SitioWeb;
 
 public class Principal
 {
+    //PARAMETROS GENERALES (PRINCIPALES)
     public bool ShowingConfigureDialog { get; set; }
-
     public static List<Productos> Productos { get; set; }
-    public static Order Carrito { get; set; }
+    public static Order Carrito { get; set; } = new Order();
     public event Action OnChange; //INYECCIÓN DE DEPENDENCIAS
     public Usuarios Usuario { get; set; }
-    //TEST
+
+    
+    //EVENTOS-ACCIONES
+    private void AddStateChanged() => OnChange?.Invoke(); //CARGAR AGREGADO
+    private void ClearStateChanged() => OnChange?.Invoke(); //CARGAR LIMPIAR
+    public void UpdateCarritoChanged() => OnChange?.Invoke(); //CARGAR CARRITO
+    private void AddCartChanged() => OnChange?.Invoke();
+    //public event Action<Order> OnCarritoUpdated; //RETORNAR EVENT CARRITO
+
+
+    //METODOS
     public List<Productos> GetProductos()
     {
         return Productos;
@@ -26,12 +35,7 @@ public class Principal
     {
         return Carrito;
     }
-    private void AddStateChanged() => OnChange?.Invoke(); //CAMBIO DE ESTADO
-    private void ClearStateChanged() => OnChange?.Invoke(); //CAMBIO DE ESTADO
-    private void AddCartChanged() => OnChange?.Invoke();
-
-
-    public static Productos GetProducto(int idProducto, int precio, int imgUrl, int stock = 1)
+    public static Productos GetProducto(int idProducto, int precio, int imgUrl, int stock = 1, bool conDescuento = false)
     {
         var url = ImgUrlAleatorio(imgUrl);
         var producto = new Productos
@@ -41,7 +45,8 @@ public class Principal
             Descripcion = "Esta es una descripción del producto en stock, click para agregar al carrito.",
             Valor = precio,
             Stock = stock,
-            ImageUrl = url
+            ImageUrl = url,
+            ConDescuento = conDescuento
         };
         return producto;
     }
@@ -76,10 +81,11 @@ public class Principal
     {
         if (Carrito.Productos.Any(p => p.IdProducto == producto.IdProducto))
         {
-            var productoSeleccionado = Carrito.Productos.Where(producto => producto.IdProducto == producto.IdProducto).FirstOrDefault();
+            var productoSeleccionado = Carrito.Productos.Where(p => p.IdProducto == producto.IdProducto).FirstOrDefault();
             if (productoSeleccionado != null)
             {
                 Carrito.Productos.Remove(productoSeleccionado);
+                AddCartChanged();
             }
         }
     }
@@ -112,5 +118,5 @@ public class Principal
     {
         var valorPesos = valor.ToString("N0", new System.Globalization.CultureInfo("es-CL"));
         return $"${valorPesos}";
-    }
+    }    
 }

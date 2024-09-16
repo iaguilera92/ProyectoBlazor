@@ -17,10 +17,12 @@ public class Order
     public LatitudLongitud? DeliveryLocation { get; set; }
 
     public List<Productos> Productos { get; set; } = new List<Productos>();
-
-    public decimal GetPrecioTotal() => Productos.Sum(p => p.Valor);
+    public int CantidadProductos { get; set; }
+    public decimal GetPrecioTotal() => Productos.Sum(p => p.ValorCantidad);
 
     public string GetFormattedTotalPrice() => GetPrecioTotal().ToString("0.00");
+    public decimal valorDeliveryMin { get; set; } = 3500; //DEFAULT
+    public decimal valorDeliveryMax { get; set; } = 4500; //DEFAULT
 }
 
 [JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Default, PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
