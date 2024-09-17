@@ -91,7 +91,8 @@
             int stockRandom = random.Next(3, 15);
             int imgRandom = random.Next(1, 4);
             var producto = Principal.GetProducto(ultimoId, numeroRandom, imgRandom, stockRandom);
-            JS.InvokeVoidAsync("mostrarLimpiar", elementLimpiar);
+            
+            //JS.InvokeVoidAsync("mostrarLimpiar", elementLimpiar);
             Principal.AgregarProducto(producto);
             
         }
@@ -133,7 +134,7 @@
         }
     }       
 }
-<script>
+@* <script>
     function mostrarLimpiar(element) {
         if (element) 
         {
@@ -149,3 +150,4 @@
         }
     }
 </script>
+ *@
