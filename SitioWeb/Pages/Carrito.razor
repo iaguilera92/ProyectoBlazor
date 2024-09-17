@@ -41,7 +41,7 @@
                                                         <i class="fas fa-minus"></i>
                                                     </button>
 
-                                                    <input id="form1" min="0" value="@producto.Cantidad" type="number" disabled="disabled" style="text-align: center;" class="form-control form-control-sm" />
+                                                    <input id="form1" min="0" value="@producto.Cantidad" disabled="disabled" style="align-items: center;text-align: center;width: 50%;font-size: 14px;" />
 
                                                     <button data-mdb-button-init data-mdb-ripple-init class="btn btn-link px-2"
                                                     @onclick="() => AgregarProducto(producto)">
@@ -96,7 +96,7 @@
                                         <h6>Envío Delivery</h6>
                                         @if(carrito != null)
                                         {
-                                            <h6>Entre @Principal.FormatearPesos(carrito.valorDeliveryMin) a @Principal.FormatearPesos(carrito.valorDeliveryMax)</h6>
+                                            <h6>@Principal.FormatearPesos(carrito.valorDeliveryMin) a @Principal.FormatearPesos(carrito.valorDeliveryMax)</h6>
                                         }
                                     </div>
 

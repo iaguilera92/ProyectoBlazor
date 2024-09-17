@@ -77,7 +77,7 @@
                 showCloseButton = true,
                 background = "rgb(0 0 0)", //FONDO SWAL
                 color = "#ffffff", // COLOR LETRA
-                timer = 2300,
+                //timer = 2300,
                 customClass = new
                 {
                     title = "swal-title", // CSS DE ACÁ
@@ -94,8 +94,10 @@
             <center>
             <img src='{imgUrl}'
                  style='width:75%; height:60%; margin-bottom:20px;'>
-            <h2 style='margin-bottom:0;'>{titulo}</h2>
-                <img id='myGif' src='https://i.pinimg.com/originals/70/a5/52/70a552e8e955049c8587b2d7606cd6a6.gif' style='width:70%; height:70%;'>
+            <h2 style='margin-bottom: 4%;'>{titulo}</h2>
+            <div class='icono-spinner-cargar'>
+                <i class='icono-spinner material-icons'>shopping_cart</i>
+            </div>
                 <br>
             <span class='price' style='margin-bottom:2%'>Valor: {mensaje}</span>   
             <h3 style='margin-top: 10px;'>Total carrito: ${totalCarritoPesos}</h3>
@@ -143,6 +145,41 @@
      }
 </script>
 <style>
+    .cart__loader {
+        position: absolute;
+        z-index: 2;
+        width: 100%;
+        left: 0;
+        top: 45%;
+    }
+    .cart__loader__icon {
+        position: absolute;
+        top: 10%;
+        color: #607d8b;
+        font-size: 30px;
+        left: 0;
+        width: 100% !important;
+    }
+    .material-icons, .mi {
+        font-family: 'Material Icons';
+        font-weight: normal;
+        font-style: normal;
+        font-size: 24px;
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        line-height: 1;
+        text-transform: none;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        -moz-osx-font-smoothing: grayscale;
+        font-feature-settings: 'liga';
+    }
+    .cart__loader__spinner {
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+    }
     .swal-title {
         margin-top: -11rem;
         height: 180px;
@@ -164,5 +201,49 @@
         line-height: 2rem;
         margin-top: -12rem !important;
     }
+    /* Animación de rotación */
+.icono-spinner-cargar {
+    display: inline-block;
+    width: 150px;
+    height: 150px;
+    position: relative;
+    margin-bottom: 8%;
+}
+
+    .icono-spinner-cargar::before {
+        content: '';
+        box-sizing: border-box;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 7px solid white;
+        border-radius: 50%;
+        border-color: white transparent white transparent;
+        animation: animacion-spinner 1.2s linear infinite;
+    }
+
+.material-icons {
+    font-size: 100px !important;
+}
+
+.icono-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+}
+
+@@keyframes animacion-spinner {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4/animate.min.css" />

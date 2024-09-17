@@ -40,7 +40,6 @@
     //[Parameter] public EventCallback<string> OnEventoCarrito { get; set; }
     private Order carrito;
     private MostrarAlerta Alert;
-    private ElementReference elementLimpiar;
 
     protected override async Task OnInitializedAsync()
     {
@@ -107,7 +106,6 @@
             {
                 if (productos?.Count > 4)
                 {
-                    await JS.InvokeVoidAsync("quitarLimpiar", elementLimpiar);
                     Principal.Limpiar();
                     
                     await OnEvento.InvokeAsync(null);
@@ -116,7 +114,6 @@
                 }
                 else if (Principal.Carrito?.Productos.Count > 0)
                 {
-                    await JS.InvokeVoidAsync("quitarLimpiar", elementLimpiar);
                     Principal.LimpiarCarrito();                    
                     Alert.ShowAlert("Carrito vaciado!", "Carrito se encuentra sin productos actualmente.", "success");
                     
@@ -129,7 +126,6 @@
         }
         else
         {
-            await JS.InvokeVoidAsync("quitarLimpiar", elementLimpiar);
             Alert.ShowAlert("Informativo", "No se ha podido eliminar los productos, los productos principales no se eliminan.", "warning");
         }
     }       
