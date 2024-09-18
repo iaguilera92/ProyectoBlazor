@@ -4,11 +4,68 @@
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
 
-
+<style class="darkreader darkreader--sync" media="screen"></style>
 <div class="page">
     <main>
-        <!--BARRA PRINCIPAL -->
-        <div class="top-row px-4">
+
+        <!--BARRA PRINCIPAL-->
+        <div id="headerwrap" class=" tf_box">
+            <div class="header-icons tf_hide">
+                <a id="menu-icon" class="tf_inline_b tf_text_dec" href="#mobile-menu" aria-label="Menu"><span class="menu-icon-inner tf_inline_b tf_vmiddle tf_overflow"></span><span class="screen-reader-text">Menu</span></a>
+            </div>
+
+            <header id="header" class="tf_box pagewidth tf_clearfix" itemscope="itemscope" itemtype="https://schema.org/WPHeader">
+                <!--LOGO PRINCIPAL -->
+                <div class="header-bar tf_box header-bar">
+                    <a title="Click para recargar el sitio web" class="logo" href="">
+                        @* <img src="https://image.pngaaa.com/939/1920939-middle.png" data-tf-not-load="1" fetchpriority="high"> *@
+                        @* <img src="shop-online.png" data-tf-not-load="1" fetchpriority="high" style="width:4rem" /> *@
+                        <img src="logo-nxo.png" data-tf-not-load="1" fetchpriority="high" />
+
+                    </a>
+                </div>
+
+                <div id="mobile-menu" class="sidemenu sidemenu-off tf_scrollbar">
+
+                    <div class="navbar-wrapper tf_clearfix">
+                        <nav id="main-nav-wrap" itemscope="itemscope" itemtype="https://schema.org/SiteNavigationElement">
+                            <ul id="main-nav" class="main-nav tf_clearfix tf_box" data-init="true">
+                                <li class="menu-item-page-2214 menu-item menu-item-type-post_type menu-item-object-page menu-item-home current-menu-item page_item page-item-2214 current_page_item menu-item-4015"><a href="" aria-current="page">Inicio</a> </li>
+                                <li @onclick="OtrosProductos" class="menu-item-page-2891 menu-item menu-item-type-post_type menu-item-object-page menu-item-4009" ><a>Otros Productos</a></li>
+                                <li @onclick="OtrosProductos" class="menu-item-page-417 menu-item menu-item-type-post_type menu-item-object-page menu-item-4011"><a>Nosotros</a></li>
+                                <li class="menu-item-page-31 menu-item menu-item-type-post_type menu-item-object-page menu-item-4014"><a>Iniciar Sesión</a></li>
+                                <!--ADMINISTRACIÓN-->
+                                <li id="frmAdminitracion">
+                                    <Administracion />
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <a id="menu-icon-close" aria-label="Close menu" class="tf_close tf_hide" href="#"><span class="screen-reader-text">Close Menu</span></a>
+                    <!--MOBILE MENU-->                    
+                </div>
+            </header>
+        </div>
+        <!--FIN BARRA PRINCIPAL-->
+        <script>
+            document.getElementById('menu-icon').addEventListener('click', function () {
+                var menu = document.getElementById('mobile-menu');
+                menu.className = 'sidemenu tf_scrollbar sidemenu-on';
+                menu.style.display = 'block';
+                var admin = document.getElementById('frmAdminitracion');
+                admin.style.display = 'none';
+            });
+            document.getElementById('menu-icon-close').addEventListener('click', function () {
+                var menu = document.getElementById('mobile-menu');
+                menu.className = 'sidemenu sidemenu-off tf_scrollbar';
+                menu.style.display = 'none';
+                var admin = document.getElementById('frmAdminitracion');
+                admin.style.display = 'block';
+            });
+        </script>
+
+        <!--BARRA PRINCIPAL OLD -->
+        @* <div class="top-row px-4">
             <a class="logo" href="" style="cursor: pointer;">
                 <img src="https://cdn-icons-png.freepik.com/512/9284/9284424.png" alt="Redirigir a Proyecto Blazor"/>
             </a>
@@ -27,10 +84,9 @@
             </a>
             <!--ADMINISTRACIÓN-->
             <Administracion />
-        </div>       
+        </div>*@
         <Index />
         <MostrarAlerta @ref="Alert" />
-        <br />    
     </main>
 </div>
 @code {

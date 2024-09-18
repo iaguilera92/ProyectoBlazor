@@ -4,11 +4,13 @@
 @inject Principal Principal
 @inject NavigationManager NavigationManager
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-<br />
-<center>
+<div class="video-container">
+<video autoplay muted loop id="background-video">
+        <source src="https://www.connectic.cl/wp-content/uploads/2024/07/136268-764387688_small.mp4" type="video/mp4">            
+</video>
+<div class="overlay"></div>
+<div class="content">
     <MostrarAlerta @ref="Alert" />
-    <div>
         <ul class="producto-cards">
             @if (productos is not null)
             {
@@ -20,14 +22,14 @@
                             <span class="title">@producto.NombreProducto</span>
                             @producto.Descripcion
                             <!--VALORES-->
-                            @if(producto.ConDescuento)
+                            @if (producto.ConDescuento)
                             {
                                 <span class="price-old"><s>$@CalcularValorOld(producto.Valor)</s></span>
                             }
                             <span class="price">@Principal.FormatearPesos(producto.Valor)</span>
-                             
+
                             <!--VALORACIÓN-->
-                            <div class="rating">
+                            <div class="rating" title="Valoración del producto">
                                 <input type="radio" name="rating" id="rating-1">
                                 <label for="rating-1"></label>
                                 <input type="radio" name="rating" id="rating-2">
@@ -43,14 +45,14 @@
                         <div class="page-wrapper">
                             <button style="margin-top:194px; cursor:pointer" class="add-to-cart" @onclick="() => AgregarCarrito(producto)">
                                 Agregar carrito
-                                <i class="fas fa-shopping-cart"/>
+                                <i class="fas fa-shopping-cart" />
                             </button>
                             <!--STOCK-->
-                           <div class="producto-stock" title="Cantidad de productos en venta">
-                                <div class="stocks" >
+                            <div class="producto-stock">
+                                <div class="stocks">
                                     @if (@producto.Stock >= 10)
                                     {
-                                        <span class="stock-verde" >
+                                        <span class="stock-verde">
                                             @producto.Stock.ToString()
                                         </span>
                                     }
@@ -67,61 +69,110 @@
                                 </div>
                             </div>
                         </div>
-                     </li>
+                    </li>
                 }
             }
         </ul>
         
-        <style>
-/*             rating {
-              display: flex;
-              width: 100%;
-              justify-content: center;
-              overflow: hidden;
-              flex-direction: row-reverse;
-              height: 150px;
-              position: relative;
-            } */
-
-            .producto-info .rating {
-                position: absolute;
-                bottom: 0rem;
-                font-size: 0;
-                font-weight: 700;  
-                left: 2%;
-            }
-            .rating-0 {
-              filter: grayscale(100%);
-            }
-            
-            .rating > input {
-              display: none;
-            }
-            
-            .rating > label {
-              cursor: pointer;
-              width: 20px;
-              height: 20px;
-              margin-top: auto;
-              background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='126.729' height='126.73'%3e%3cpath fill='%23fcd93a' d='M121.215 44.212l-34.899-3.3c-2.2-.2-4.101-1.6-5-3.7l-12.5-30.3c-2-5-9.101-5-11.101 0l-12.4 30.3c-.8 2.1-2.8 3.5-5 3.7l-34.9 3.3c-5.2.5-7.3 7-3.4 10.5l26.3 23.1c1.7 1.5 2.4 3.7 1.9 5.9l-7.9 32.399c-1.2 5.101 4.3 9.3 8.9 6.601l29.1-17.101c1.9-1.1 4.2-1.1 6.1 0l29.101 17.101c4.6 2.699 10.1-1.4 8.899-6.601l-7.8-32.399c-.5-2.2.2-4.4 1.9-5.9l26.3-23.1c3.8-3.5 1.6-10-3.6-10.5z'/%3e%3c/svg%3e");
-              background-repeat: no-repeat;
-              background-position: center;
-              background-size: 76%;
-              transition: .3s;
-              margin-right: -3.7%;
-            }
-            .star-desactivada{
-                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='126.729' height='126.73'%3e%3cpath fill='%23e3e3e3' d='M121.215 44.212l-34.899-3.3c-2.2-.2-4.101-1.6-5-3.7l-12.5-30.3c-2-5-9.101-5-11.101 0l-12.4 30.3c-.8 2.1-2.8 3.5-5 3.7l-34.9 3.3c-5.2.5-7.3 7-3.4 10.5l26.3 23.1c1.7 1.5 2.4 3.7 1.9 5.9l-7.9 32.399c-1.2 5.101 4.3 9.3 8.9 6.601l29.1-17.101c1.9-1.1 4.2-1.1 6.1 0l29.101 17.101c4.6 2.699 10.1-1.4 8.899-6.601l-7.8-32.399c-.5-2.2.2-4.4 1.9-5.9l26.3-23.1c3.8-3.5 1.6-10-3.6-10.5z'/%3e%3c/svg%3e") !important;
-            }
-            .star-activa{
-                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='126.729' height='126.73'%3e%3cpath fill='%23fcd93a' d='M121.215 44.212l-34.899-3.3c-2.2-.2-4.101-1.6-5-3.7l-12.5-30.3c-2-5-9.101-5-11.101 0l-12.4 30.3c-.8 2.1-2.8 3.5-5 3.7l-34.9 3.3c-5.2.5-7.3 7-3.4 10.5l26.3 23.1c1.7 1.5 2.4 3.7 1.9 5.9l-7.9 32.399c-1.2 5.101 4.3 9.3 8.9 6.601l29.1-17.101c1.9-1.1 4.2-1.1 6.1 0l29.101 17.101c4.6 2.699 10.1-1.4 8.899-6.601l-7.8-32.399c-.5-2.2.2-4.4 1.9-5.9l26.3-23.1c3.8-3.5 1.6-10-3.6-10.5z'/%3e%3c/svg%3e") !important;
-            }
-            .star-hover{
-                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='126.729' height='126.73'%3e%3cpath fill='%23d8b11e' d='M121.215 44.212l-34.899-3.3c-2.2-.2-4.101-1.6-5-3.7l-12.5-30.3c-2-5-9.101-5-11.101 0l-12.4 30.3c-.8 2.1-2.8 3.5-5 3.7l-34.9 3.3c-5.2.5-7.3 7-3.4 10.5l26.3 23.1c1.7 1.5 2.4 3.7 1.9 5.9l-7.9 32.399c-1.2 5.101 4.3 9.3 8.9 6.601l29.1-17.101c1.9-1.1 4.2-1.1 6.1 0l29.101 17.101c4.6 2.699 10.1-1.4 8.899-6.601l-7.8-32.399c-.5-2.2.2-4.4 1.9-5.9l26.3-23.1c3.8-3.5 1.6-10-3.6-10.5z'/%3e%3c/svg%3e") !important;
-            }
-        </style>        
     </div>
-</center>  
+    <!--FIN CONTENT-->
+</div>
+
+       <style>
+
+    .overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        min-width: 100%;
+        min-height: 100%;
+        width: auto;
+        height: auto;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(rgba(14, 43, 53, 0.69) 0%, rgba(7, 8, 8, 0.83) 100%);
+        z-index: 0;
+    }
+    .builder_row_cover:after, .builder_row_cover:before {
+        border-radius: inherit;
+        content: "";
+        display: block;
+        height: 100%;
+        left: 0;
+        position: absolute;
+        top: 0;
+        transition: opacity .5s ease-in-out, background-color .5s ease-in-out;
+        width: 100%;
+    }
+
+    .video-container {
+        position: relative;
+        width: 100%;
+        height: 100vh; /* Altura completa de la ventana */
+        overflow: hidden;
+    }
+
+    #background-video {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        min-width: 100%;
+        min-height: 100%;
+        width: auto;
+        height: auto;
+        transform: translate(-50%, -50%);
+        z-index: 0;
+    }
+
+     .content {
+         position: relative;
+         z-index: 1;
+         color: transparent;
+         text-align: center;
+         padding-top: 7rem;
+     }
+    /* VALORACION */
+    .producto-info .rating {
+        position: absolute;
+        bottom: 0rem;
+        font-size: 0;
+        font-weight: 700;
+        left: 2%;
+    }
+
+    .rating-0 {
+        filter: grayscale(100%);
+    }
+
+    .rating > input {
+        display: none;
+    }
+
+    .rating > label {
+        cursor: pointer;
+        width: 20px;
+        height: 20px;
+        margin-top: auto;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='126.729' height='126.73'%3e%3cpath fill='%23fcd93a' d='M121.215 44.212l-34.899-3.3c-2.2-.2-4.101-1.6-5-3.7l-12.5-30.3c-2-5-9.101-5-11.101 0l-12.4 30.3c-.8 2.1-2.8 3.5-5 3.7l-34.9 3.3c-5.2.5-7.3 7-3.4 10.5l26.3 23.1c1.7 1.5 2.4 3.7 1.9 5.9l-7.9 32.399c-1.2 5.101 4.3 9.3 8.9 6.601l29.1-17.101c1.9-1.1 4.2-1.1 6.1 0l29.101 17.101c4.6 2.699 10.1-1.4 8.899-6.601l-7.8-32.399c-.5-2.2.2-4.4 1.9-5.9l26.3-23.1c3.8-3.5 1.6-10-3.6-10.5z'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 76%;
+        transition: .3s;
+        margin-right: -3.7%;
+    }
+
+    .star-desactivada {
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='126.729' height='126.73'%3e%3cpath fill='%23e3e3e3' d='M121.215 44.212l-34.899-3.3c-2.2-.2-4.101-1.6-5-3.7l-12.5-30.3c-2-5-9.101-5-11.101 0l-12.4 30.3c-.8 2.1-2.8 3.5-5 3.7l-34.9 3.3c-5.2.5-7.3 7-3.4 10.5l26.3 23.1c1.7 1.5 2.4 3.7 1.9 5.9l-7.9 32.399c-1.2 5.101 4.3 9.3 8.9 6.601l29.1-17.101c1.9-1.1 4.2-1.1 6.1 0l29.101 17.101c4.6 2.699 10.1-1.4 8.899-6.601l-7.8-32.399c-.5-2.2.2-4.4 1.9-5.9l26.3-23.1c3.8-3.5 1.6-10-3.6-10.5z'/%3e%3c/svg%3e") !important;
+    }
+
+    .star-activa {
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='126.729' height='126.73'%3e%3cpath fill='%23fcd93a' d='M121.215 44.212l-34.899-3.3c-2.2-.2-4.101-1.6-5-3.7l-12.5-30.3c-2-5-9.101-5-11.101 0l-12.4 30.3c-.8 2.1-2.8 3.5-5 3.7l-34.9 3.3c-5.2.5-7.3 7-3.4 10.5l26.3 23.1c1.7 1.5 2.4 3.7 1.9 5.9l-7.9 32.399c-1.2 5.101 4.3 9.3 8.9 6.601l29.1-17.101c1.9-1.1 4.2-1.1 6.1 0l29.101 17.101c4.6 2.699 10.1-1.4 8.899-6.601l-7.8-32.399c-.5-2.2.2-4.4 1.9-5.9l26.3-23.1c3.8-3.5 1.6-10-3.6-10.5z'/%3e%3c/svg%3e") !important;
+    }
+
+    .star-hover {
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='126.729' height='126.73'%3e%3cpath fill='%23d8b11e' d='M121.215 44.212l-34.899-3.3c-2.2-.2-4.101-1.6-5-3.7l-12.5-30.3c-2-5-9.101-5-11.101 0l-12.4 30.3c-.8 2.1-2.8 3.5-5 3.7l-34.9 3.3c-5.2.5-7.3 7-3.4 10.5l26.3 23.1c1.7 1.5 2.4 3.7 1.9 5.9l-7.9 32.399c-1.2 5.101 4.3 9.3 8.9 6.601l29.1-17.101c1.9-1.1 4.2-1.1 6.1 0l29.101 17.101c4.6 2.699 10.1-1.4 8.899-6.601l-7.8-32.399c-.5-2.2.2-4.4 1.9-5.9l26.3-23.1c3.8-3.5 1.6-10-3.6-10.5z'/%3e%3c/svg%3e") !important;
+    }
+</style>
+
 @code
 {
     List<Productos> productos = new List<Productos>();

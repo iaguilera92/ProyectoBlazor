@@ -16,13 +16,9 @@
     @*<a class="sign-in" href="authentication/register">Registrarse</a>*@
 
     <MostrarAlerta @ref="Alert" />
-    
-    @*<a @ref="elementLimpiar" id="LimpiarAdmin" class="sign-in clear hidden" @onclick="Limpiar"><i class="fa-solid fa-trash" style="font-size:21px"></i></a>*@
-    <a class="sign-in add" @onclick="AgregarProducto">TEST +</a>
-    <a class="sign-in" href="login" style="width: 140px;height: 46px;">Iniciar Sesión</a>
 
     @* CARRITO *@
-    <div class="shopping" title="Click para visualizar el carrito" @onclick="AgregarCarrito">
+    <div class="shopping agrandar" title="Click para visualizar el carrito" @onclick="AgregarCarrito">
         <div id="cart" class="cart" data-totalitems="0">
             <i class="fas fa-shopping-cart"></i>
         </div>

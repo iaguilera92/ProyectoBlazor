@@ -62,14 +62,14 @@
             await JS.InvokeVoidAsync("Swal.fire", new
             {
                 html = HtmlCarrito(titulo, mensaje, carrito, imgUrl),
-                position = "top-end",
+                position = "top-start",
                 showClass = new
                 {
-                    popup = "animate__animated animate__fadeInRight animate__faster"
+                    popup = "animate__animated animate__fadeInLeft animate__faster"
                 },
                 hideClass = new
                 {
-                    popup = "animate__animated animate__fadeOutRight animate__faster"
+                    popup = "animate__animated animate__fadeOutLeft animate__faster"
                 },
                 grow = "column",
                 width = "32%", // Ajuste dinámico al 90% del ancho de la pantalla   
@@ -77,7 +77,7 @@
                 showCloseButton = true,
                 background = "rgb(0 0 0)", //FONDO SWAL
                 color = "#ffffff", // COLOR LETRA
-                //timer = 2300,
+                timer = 2300,
                 customClass = new
                 {
                     title = "swal-title", // CSS DE ACÁ
@@ -99,8 +99,18 @@
                 <i class='icono-spinner material-icons'>shopping_cart</i>
             </div>
                 <br>
-            <span class='price' style='margin-bottom:2%'>Valor: {mensaje}</span>   
-            <h3 style='margin-top: 10px;'>Total carrito: ${totalCarritoPesos}</h3>
+            <div class='panel panel-primary'>
+             <div class='panel-heading'>
+                 <div class='row'>
+                     <div class='col-xs-3'>
+                         <i class='fa fa-dollar fa-5x'></i>
+                     </div>
+                     <div class='col-xs-9 text-right'>
+                         <div class='huge'>Precio producto</div>
+                         <div class='huge-x2'>{mensaje}</div>
+                     </div>
+                 </div>
+             </div>   
             </center>";
 
             return html;
@@ -145,6 +155,57 @@
      }
 </script>
 <style>
+    /* TOTAL SWAL */
+    .huge{
+        font-size: 25px;
+        margin-right: 4px;
+    }
+
+    .huge-x2 {
+        font-size: 60px;
+        font-weight: bold;
+    }
+    .panel {
+        width: 80%;
+        margin-bottom: 20px;
+        background-color: #fff;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+        box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+    }
+
+    .panel-primary {
+        border-color: #337ab7;
+    }
+
+        .panel-primary > .panel-heading {
+            color: #fff;
+            background-color: #337ab7;
+            border-color: #337ab7;
+            padding: 20px;
+        }
+
+    /* ICONO */
+    .col-xs-3 {
+        width: 25%;
+        text-align: center;
+        margin-bottom: 5px;
+        align-items: center;
+        padding-top: 18px;
+    }
+
+    .col-xs-9 {
+        width: 75%;
+        text-align: right;
+        padding-top: 5px;
+        padding-left: 10px;
+    }
+
+    .fa-5x {
+        font-size: 5em;
+    }
+    /* ICONO CART */
     .cart__loader {
         position: absolute;
         z-index: 2;
@@ -201,49 +262,5 @@
         line-height: 2rem;
         margin-top: -12rem !important;
     }
-    /* Animación de rotación */
-.icono-spinner-cargar {
-    display: inline-block;
-    width: 150px;
-    height: 150px;
-    position: relative;
-    margin-bottom: 8%;
-}
-
-    .icono-spinner-cargar::before {
-        content: '';
-        box-sizing: border-box;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        border: 7px solid white;
-        border-radius: 50%;
-        border-color: white transparent white transparent;
-        animation: animacion-spinner 1.2s linear infinite;
-    }
-
-.material-icons {
-    font-size: 100px !important;
-}
-
-.icono-spinner {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-}
-
-@@keyframes animacion-spinner {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
+    
 </style>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4/animate.min.css" />

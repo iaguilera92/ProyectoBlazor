@@ -6,21 +6,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Proyecto Blazor</title>
     <base href="/" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="css/app.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4/animate.min.css" />
     <link href="SitioWeb.styles.css" rel="stylesheet" />
-    
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 </head>
 
-<body>
+<body style="font-family: 'Poppins' !important;">
+
     <!--CARGANDO-->
-    <center id="cargando">
-        <img src="https://www.icegif.com/wp-content/uploads/2023/07/icegif-1268.gif" alt="cargando gif" style="margin-bottom: 10%; width: 450px; height: 400px" >
-        <div class="loading-bar" style="display:block;"/>
+    <center id="cargando" class="container-new">
+        <!--<img src="https://www.icegif.com/wp-content/uploads/2023/07/icegif-1268.gif" alt="cargando gif" style="margin-bottom: 10%; width: 450px; height: 400px" >-->
+        <div class='icono-spinner-cargar'>
+            <i class='icono-spinner material-icons'>shopping_cart</i>
+        </div>
+        <div class="loading-bar"/>
     </center>
 
     <!--PRINCIPAL-->
@@ -31,11 +40,10 @@
     <script>
         document.getElementById('pagePrincipal').style.display = 'none';
         document.body.style.visibility = 'visible';
-
         setTimeout(function () {
             document.getElementById('cargando').style.display = 'none';
             document.getElementById('pagePrincipal').style.display = 'block';
-        }, 4500);
+        }, 2500);
     </script>
 
     <!--AGREGAR ERROR-->
