@@ -62,22 +62,23 @@
             await JS.InvokeVoidAsync("Swal.fire", new
             {
                 html = HtmlCarrito(titulo, mensaje, carrito, imgUrl),
-                position = "top-start",
+                position = "bottom",
                 showClass = new
                 {
-                    popup = "animate__animated animate__fadeInLeft animate__faster"
+                    popup = "animate__animated animate__fadeInUp animate__faster"
                 },
                 hideClass = new
                 {
-                    popup = "animate__animated animate__fadeOutLeft animate__faster"
+                    popup = "animate__animated animate__fadeOutDown animate__faster"
                 },
-                grow = "column",
-                width = "32%", // Ajuste dinámico al 90% del ancho de la pantalla   
+                grow = "row",
+                width = "55%", // Ajuste dinámico al 90% del ancho de la pantalla   
+                height = "25%",
                 showConfirmButton = false,
                 showCloseButton = true,
-                background = "rgb(0 0 0)", //FONDO SWAL
-                color = "#ffffff", // COLOR LETRA
-                timer = 2300,
+                background = "white", //FONDO SWAL rgb(0 0 0)
+                color = "black", // COLOR LETRA
+                timer = 2100,
                 customClass = new
                 {
                     title = "swal-title", // CSS DE ACÁ
@@ -90,23 +91,19 @@
             var totalCarrito = carrito.Productos.Sum(p => p.Valor);
             var totalCarritoPesos = totalCarrito.ToString("N0", new System.Globalization.CultureInfo("es-CL"));
 
+            //<img src='{imgUrl}' style='width:75%; height:60%; margin-bottom:20px;'>
+            //<h2 style='margin-bottom: 4%;'>{titulo}</h2>
             string html = $@"
-            <center>
-            <img src='{imgUrl}'
-                 style='width:75%; height:60%; margin-bottom:20px;'>
-            <h2 style='margin-bottom: 4%;'>{titulo}</h2>
-            <div class='icono-spinner-cargar'>
-                <i class='icono-spinner material-icons'>shopping_cart</i>
-            </div>
-                <br>
+            <br/>
+            <center style='display: block'>
             <div class='panel panel-primary'>
              <div class='panel-heading'>
                  <div class='row'>
-                     <div class='col-xs-3'>
-                         <i class='fa fa-dollar fa-5x'></i>
+                     <div class='icono-spinner-cargar' style='margin-left: 3%; margin-top: 1%; margin-bottom: 0'>
+                        <i class='icono-spinner material-icons'>shopping_cart</i>
                      </div>
                      <div class='col-xs-9 text-right'>
-                         <div class='huge'>Precio producto</div>
+                         <div class='huge'>Agregado al carro</div>
                          <div class='huge-x2'>{mensaje}</div>
                      </div>
                  </div>
@@ -125,7 +122,7 @@
             imageWidth: 200,
             imageHeight: 170,
             showCancelButton: true,
-            confirmButtonText: 'Remover del carrito  <i class="fa-solid fa-trash"> ',
+            confirmButtonText: 'Vaciar carrito <i class="fa-solid fa-trash"> ',
             cancelButtonText: 'Seguir comprando',
             customClass: {
                 confirmButton: 'btn btn-danger', 
@@ -166,8 +163,8 @@
         font-weight: bold;
     }
     .panel {
-        width: 80%;
-        margin-bottom: 20px;
+        width: 90%;
+        /* margin-bottom: 20px; */
         background-color: #fff;
         border: 1px solid transparent;
         border-radius: 4px;
@@ -184,6 +181,7 @@
             background-color: #337ab7;
             border-color: #337ab7;
             padding: 20px;
+            height: 205px !important;
         }
 
     /* ICONO */
@@ -198,7 +196,7 @@
     .col-xs-9 {
         width: 75%;
         text-align: right;
-        padding-top: 5px;
+        padding-top: 15px;
         padding-left: 10px;
     }
 

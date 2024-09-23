@@ -31,6 +31,7 @@ main {
 
 .logo {
     display: flex;
+    float: right;
 }
 
     .logo > img {
@@ -5981,7 +5982,7 @@ button, input[type=reset], input[type=submit] {
 .pagewidth {
     margin: 0 auto;
     max-width: 100%;
-    width: 70%;
+    /*width: 70%;*/
 }
 
 #layout {
@@ -6885,7 +6886,7 @@ body.attachment {
 }
 
 #site-logo {
-    margin: 5px 15px 5px 0
+    margin: 5px 15px 5px 0;
 }
 
 #site-description {
@@ -8500,3 +8501,19 @@ input[type="submit"] {
 }
 
 /* END MOBILE MENU CSS */
+
+/*SLIDE MOVER*/
+.slide-in-div {
+    transform: translateX(-50vw);
+    animation: slide-in 1.0s ease-in-out forwards;
+}
+
+@keyframes slide-in {
+    0% {
+        transform: translateX(-50vw);
+    }
+
+    100% {
+        transform: translateX(0); 
+    }
+}

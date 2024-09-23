@@ -3,15 +3,16 @@
 @inject HttpClient HttpClient
 @inject Principal Principal
 @inject NavigationManager NavigationManager
+
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <div class="video-container">
 <video autoplay muted loop id="background-video">
-        <source src="https://www.connectic.cl/wp-content/uploads/2024/07/136268-764387688_small.mp4" type="video/mp4">            
+    <source src="https://www.connectic.cl/wp-content/uploads/2024/07/136268-764387688_small.mp4" type="video/mp4">            
 </video>
 <div class="overlay"></div>
-<div class="content">
+    <div class="content">
     <MostrarAlerta @ref="Alert" />
-        <ul class="producto-cards">
+        <ul class="producto-cards inicio-agrandar">
             @if (productos is not null)
             {
                 @foreach (var producto in productos)
@@ -42,137 +43,142 @@
                                 <label for="rating-5" class="star-desactivada"></label>
                             </div>
                         </div>
-                        <div class="page-wrapper">
-                            <button style="margin-top:194px; cursor:pointer" class="add-to-cart" @onclick="() => AgregarCarrito(producto)">
-                                Agregar carrito
-                                <i class="fas fa-shopping-cart" />
-                            </button>
-                            <!--STOCK-->
-                            <div class="producto-stock">
-                                <div class="stocks">
-                                    @if (@producto.Stock >= 10)
-                                    {
-                                        <span class="stock-verde">
-                                            @producto.Stock.ToString()
-                                        </span>
-                                    }
-                                    else if (@producto.Stock > 0 && @producto.Stock < 10)
-                                    {
-                                        <span class="stock-naranjo">
-                                            @producto.Stock.ToString()
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="stock-rojo">@producto.Stock.ToString()</span>
-                                    }
-                                </div>
+                        <!--STOCK-->
+                        <div class="producto-stock">
+                            <div class="stocks">
+                                @if (@producto.Stock >= 10)
+                                {
+                                    <span class="stock-verde">
+                                        @producto.Stock.ToString()
+                                    </span>
+                                }
+                                else if (@producto.Stock > 0 && @producto.Stock < 10)
+                                {
+                                    <span class="stock-naranjo">
+                                        @producto.Stock.ToString()
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="stock-rojo">@producto.Stock.ToString()</span>
+                                }
                             </div>
                         </div>
-                    </li>
+                        @* BOTON AGREGAR *@
+                        <button style="margin-top:226px; cursor:pointer" class="custom-boton btn-12">
+                            <span @onclick="() => AgregarCarrito(producto)">Comprar <i class="fa-solid fa-cart-arrow-down"></i></span><span>
+                                Agregar al carro
+                                <i class="fas fa-shopping-cart" />
+                            </span>
+                        </button>
+                    </li>                   
                 }
             }
-        </ul>
+        </ul> 
         
     </div>
     <!--FIN CONTENT-->
+    
 </div>
 
-       <style>
 
-    .overlay {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        min-width: 100%;
-        min-height: 100%;
-        width: auto;
-        height: auto;
-        transform: translate(-50%, -50%);
-        background: linear-gradient(rgba(14, 43, 53, 0.69) 0%, rgba(7, 8, 8, 0.83) 100%);
-        z-index: 0;
-    }
-    .builder_row_cover:after, .builder_row_cover:before {
-        border-radius: inherit;
-        content: "";
-        display: block;
-        height: 100%;
-        left: 0;
-        position: absolute;
-        top: 0;
-        transition: opacity .5s ease-in-out, background-color .5s ease-in-out;
-        width: 100%;
+
+
+<style>
+    .inicio-agrandar {
+        transform: scale(0);
+        animation: inicio-agrandar 1.0s ease-in-out forwards; /* Animación de 3 segundos */
     }
 
-    .video-container {
-        position: relative;
-        width: 100%;
-        height: 100vh; /* Altura completa de la ventana */
-        overflow: hidden;
-    }
+    @@keyframes inicio-agrandar {
+        0% {
+            transform: scale(0); /* Tamaño inicial (invisible) */
+        }
 
-    #background-video {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        min-width: 100%;
-        min-height: 100%;
-        width: auto;
-        height: auto;
-        transform: translate(-50%, -50%);
-        z-index: 0;
-    }
-
-     .content {
-         position: relative;
-         z-index: 1;
-         color: transparent;
-         text-align: center;
-         padding-top: 7rem;
-     }
-    /* VALORACION */
-    .producto-info .rating {
-        position: absolute;
-        bottom: 0rem;
-        font-size: 0;
-        font-weight: 700;
-        left: 2%;
-    }
-
-    .rating-0 {
-        filter: grayscale(100%);
-    }
-
-    .rating > input {
-        display: none;
-    }
-
-    .rating > label {
+        100% {
+            transform: scale(1); /* Tamaño final (normal) */
+        }
+}
+    .custom-boton {        
+        color: #fff;
+        border-radius: 5px;
+        margin-left: -10px;
+        font-family: 'Lato', sans-serif;
+        font-weight: 500;
+        background: transparent;
         cursor: pointer;
-        width: 20px;
-        height: 20px;
-        margin-top: auto;
-        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='126.729' height='126.73'%3e%3cpath fill='%23fcd93a' d='M121.215 44.212l-34.899-3.3c-2.2-.2-4.101-1.6-5-3.7l-12.5-30.3c-2-5-9.101-5-11.101 0l-12.4 30.3c-.8 2.1-2.8 3.5-5 3.7l-34.9 3.3c-5.2.5-7.3 7-3.4 10.5l26.3 23.1c1.7 1.5 2.4 3.7 1.9 5.9l-7.9 32.399c-1.2 5.101 4.3 9.3 8.9 6.601l29.1-17.101c1.9-1.1 4.2-1.1 6.1 0l29.101 17.101c4.6 2.699 10.1-1.4 8.899-6.601l-7.8-32.399c-.5-2.2.2-4.4 1.9-5.9l26.3-23.1c3.8-3.5 1.6-10-3.6-10.5z'/%3e%3c/svg%3e");
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: 76%;
-        transition: .3s;
-        margin-right: -3.7%;
+        transition: all 0.3s ease;
+        position: relative;
+        display: inline-block;
+        box-shadow: inset 2px 2px 2px 0px rgba(255,255,255,.5), 7px 7px 20px 0px rgba(0,0,0,.1), 4px 4px 5px 0px rgba(0,0,0,.1);
+        outline: none;
+    }
+    .btn-12 {
+        width: 100%;
+        height: 45px;
+        line-height: 42px;
+        position: relative;
+        bottom: 20px;
+        border: none;
+        box-shadow: none;
+        -webkit-perspective: 230px;
+        perspective: 230px;
     }
 
-    .star-desactivada {
-        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='126.729' height='126.73'%3e%3cpath fill='%23e3e3e3' d='M121.215 44.212l-34.899-3.3c-2.2-.2-4.101-1.6-5-3.7l-12.5-30.3c-2-5-9.101-5-11.101 0l-12.4 30.3c-.8 2.1-2.8 3.5-5 3.7l-34.9 3.3c-5.2.5-7.3 7-3.4 10.5l26.3 23.1c1.7 1.5 2.4 3.7 1.9 5.9l-7.9 32.399c-1.2 5.101 4.3 9.3 8.9 6.601l29.1-17.101c1.9-1.1 4.2-1.1 6.1 0l29.101 17.101c4.6 2.699 10.1-1.4 8.899-6.601l-7.8-32.399c-.5-2.2.2-4.4 1.9-5.9l26.3-23.1c3.8-3.5 1.6-10-3.6-10.5z'/%3e%3c/svg%3e") !important;
-    }
+        .btn-12 span {
+            width: 100%;
+            background: linear-gradient(0deg, rgba(0,172,238,1) 0%, rgba(2,126,251,1) 100%);
+            display: block;
+            position: absolute;
+            height: 40px;
+            box-shadow: inset 2px 2px 2px 0px rgba(255,255,255,.5), 7px 7px 20px 0px rgba(0,0,0,.1), 4px 4px 5px 0px rgba(0,0,0,.1);
+            border-radius: 5px;
+            margin: 0;
+            text-align: center;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            -webkit-transition: all .3s;
+            transition: all .3s;
+        }
 
-    .star-activa {
-        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='126.729' height='126.73'%3e%3cpath fill='%23fcd93a' d='M121.215 44.212l-34.899-3.3c-2.2-.2-4.101-1.6-5-3.7l-12.5-30.3c-2-5-9.101-5-11.101 0l-12.4 30.3c-.8 2.1-2.8 3.5-5 3.7l-34.9 3.3c-5.2.5-7.3 7-3.4 10.5l26.3 23.1c1.7 1.5 2.4 3.7 1.9 5.9l-7.9 32.399c-1.2 5.101 4.3 9.3 8.9 6.601l29.1-17.101c1.9-1.1 4.2-1.1 6.1 0l29.101 17.101c4.6 2.699 10.1-1.4 8.899-6.601l-7.8-32.399c-.5-2.2.2-4.4 1.9-5.9l26.3-23.1c3.8-3.5 1.6-10-3.6-10.5z'/%3e%3c/svg%3e") !important;
-    }
+            .btn-12 span:nth-child(1) {
+                z-index: 1;
+                width: 100%;
+                box-shadow: -7px -7px 20px 0px #fff9, -4px -4px 5px 0px #fff9, 7px 7px 20px 0px #0002, 4px 4px 5px 0px #0001;
+                -webkit-transform: rotateX(90deg);
+                -moz-transform: rotateX(90deg);
+                transform: rotateX(90deg);
+                -webkit-transform-origin: 50% 50% -20px;
+                -moz-transform-origin: 50% 50% -20px;
+                transform-origin: 50% 50% -20px;
+            }
 
-    .star-hover {
-        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='126.729' height='126.73'%3e%3cpath fill='%23d8b11e' d='M121.215 44.212l-34.899-3.3c-2.2-.2-4.101-1.6-5-3.7l-12.5-30.3c-2-5-9.101-5-11.101 0l-12.4 30.3c-.8 2.1-2.8 3.5-5 3.7l-34.9 3.3c-5.2.5-7.3 7-3.4 10.5l26.3 23.1c1.7 1.5 2.4 3.7 1.9 5.9l-7.9 32.399c-1.2 5.101 4.3 9.3 8.9 6.601l29.1-17.101c1.9-1.1 4.2-1.1 6.1 0l29.101 17.101c4.6 2.699 10.1-1.4 8.899-6.601l-7.8-32.399c-.5-2.2.2-4.4 1.9-5.9l26.3-23.1c3.8-3.5 1.6-10-3.6-10.5z'/%3e%3c/svg%3e") !important;
-    }
+            .btn-12 span:nth-child(2) {
+                width: 100%;
+                -webkit-transform: rotateX(0deg);
+                -moz-transform: rotateX(0deg);
+                transform: rotateX(0deg);
+                -webkit-transform-origin: 50% 50% -20px;
+                -moz-transform-origin: 50% 50% -20px;
+                transform-origin: 50% 50% -20px;
+            }
+
+        .btn-12:hover span:nth-child(1) {
+            box-shadow: inset 2px 2px 2px 0px rgba(255,255,255,.5), 7px 7px 20px 0px rgba(0,0,0,.1), 4px 4px 5px 0px rgba(0,0,0,.1);
+            -webkit-transform: rotateX(0deg);
+            -moz-transform: rotateX(0deg);
+            transform: rotateX(0deg);
+        }
+
+        .btn-12:hover span:nth-child(2) {
+            box-shadow: inset 2px 2px 2px 0px rgba(255,255,255,.5), 7px 7px 20px 0px rgba(0,0,0,.1), 4px 4px 5px 0px rgba(0,0,0,.1);
+            color: transparent;
+            -webkit-transform: rotateX(-90deg);
+            -moz-transform: rotateX(-90deg);
+            transform: rotateX(-90deg);
+        }
 </style>
-
 @code
 {
     List<Productos> productos = new List<Productos>();
@@ -190,6 +196,8 @@
         productos.Add(producto3);
         var producto4 = Principal.GetProducto(4, 23990, 4, 4, true);
         productos.Add(producto4);        
+        var producto5 = Principal.GetProducto(4, 17990, 5, 12, true);
+        productos.Add(producto5);
 
         Principal.Productos = productos;
         Principal.OnChange += StateHasChanged;
@@ -211,7 +219,7 @@
                 if (productoExistente != null)
                 {
                     productoExistente.Cantidad++;
-                    productoExistente.ValorCantidad = productoExistente.Valor + producto.Valor; //REPETIDO
+                    productoExistente.ValorCantidad = productoExistente.ValorCantidad + producto.Valor; //REPETIDO
                 }
             }
             else

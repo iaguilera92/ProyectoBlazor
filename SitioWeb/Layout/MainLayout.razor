@@ -1,8 +1,11 @@
 ﻿@using SitioWeb.Pages
+@using Entidades
 
 @inherits LayoutComponentBase
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
+@inject Principal Principal
+@inject Blazored.Modal.Services.IModalService ModalService
 
 <style class="darkreader darkreader--sync" media="screen"></style>
 <div class="page">
@@ -11,12 +14,15 @@
         <!--BARRA PRINCIPAL-->
         <div id="headerwrap" class=" tf_box">
             <div class="header-icons tf_hide">
-                <a id="menu-icon" class="tf_inline_b tf_text_dec" href="#mobile-menu" aria-label="Menu"><span class="menu-icon-inner tf_inline_b tf_vmiddle tf_overflow"></span><span class="screen-reader-text">Menu</span></a>
+                <a id="menu-icon" class="tf_inline_b tf_text_dec" href="#mobile-menu" aria-label="Menu">
+                    <span class="menu-icon-inner tf_inline_b tf_vmiddle tf_overflow"></span>
+                    <span class="screen-reader-text">Menu</span>
+                </a>
             </div>
 
             <header id="header" class="tf_box pagewidth tf_clearfix" itemscope="itemscope" itemtype="https://schema.org/WPHeader">
                 <!--LOGO PRINCIPAL -->
-                <div class="header-bar tf_box header-bar">
+                <div class="header-bar tf_box header-bar slide-in-div" style="width:30%;">
                     <a title="Click para recargar el sitio web" class="logo" href="">
                         @* <img src="https://image.pngaaa.com/939/1920939-middle.png" data-tf-not-load="1" fetchpriority="high"> *@
                         @* <img src="shop-online.png" data-tf-not-load="1" fetchpriority="high" style="width:4rem" /> *@
@@ -25,7 +31,7 @@
                     </a>
                 </div>
 
-                <div id="mobile-menu" class="sidemenu sidemenu-off tf_scrollbar">
+                <div id="mobile-menu" class="sidemenu sidemenu-off tf_scrollbar" style="width:80%;">
 
                     <div class="navbar-wrapper tf_clearfix">
                         <nav id="main-nav-wrap" itemscope="itemscope" itemtype="https://schema.org/SiteNavigationElement">
@@ -35,8 +41,24 @@
                                 <li @onclick="OtrosProductos" class="menu-item-page-417 menu-item menu-item-type-post_type menu-item-object-page menu-item-4011"><a>Nosotros</a></li>
                                 <li class="menu-item-page-31 menu-item menu-item-type-post_type menu-item-object-page menu-item-4014"><a>Iniciar Sesión</a></li>
                                 <!--ADMINISTRACIÓN-->
-                                <li id="frmAdminitracion">
-                                    <Administracion />
+                                <li id="AdministracionApp">
+                                    <div class="user-info">
+                                        @* CARRITO *@
+                                        <div class="shopping agrandar" title="Click para visualizar el carrito" @onclick="AgregarCarrito">
+                                            <div id="cart" class="cart" data-totalitems="0">
+                                                <i class="fas fa-shopping-cart"></i>
+                                            </div>
+                                            @if (carrito != null && carrito.CantidadProductos != 0)
+                                            {
+                                                <span class="stock-rojo" style="padding: 3px 12px !important;">
+                                                    @carrito.CantidadProductos
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </li>
+                                <li @onclick="AgregarCarrito" id="AdministracionMobile" class="menu-item-page-31 menu-item menu-item-type-post_type menu-item-object-page menu-item-4014" style="display:none;">
+                                    <a>Carrito de compras</a>
                                 </li>
                             </ul>
                         </nav>
@@ -47,23 +69,28 @@
             </header>
         </div>
         <!--FIN BARRA PRINCIPAL-->
+
         <script>
             document.getElementById('menu-icon').addEventListener('click', function () {
                 var menu = document.getElementById('mobile-menu');
                 menu.className = 'sidemenu tf_scrollbar sidemenu-on';
                 menu.style.display = 'block';
-                var admin = document.getElementById('frmAdminitracion');
+                var admin = document.getElementById('AdministracionApp');
                 admin.style.display = 'none';
+                var adminMobile = document.getElementById('AdministracionMobile');
+                admin.style.display = 'block';
             });
             document.getElementById('menu-icon-close').addEventListener('click', function () {
                 var menu = document.getElementById('mobile-menu');
                 menu.className = 'sidemenu sidemenu-off tf_scrollbar';
                 menu.style.display = 'none';
-                var admin = document.getElementById('frmAdminitracion');
+                var admin = document.getElementById('AdministracionApp');
                 admin.style.display = 'block';
+                var adminMobile = document.getElementById('AdministracionMobile');
+                admin.style.display = 'none';
             });
         </script>
-
+        
         <!--BARRA PRINCIPAL OLD -->
         @* <div class="top-row px-4">
             <a class="logo" href="" style="cursor: pointer;">
@@ -85,14 +112,105 @@
             <!--ADMINISTRACIÓN-->
             <Administracion />
         </div>*@
+
         <Index />
         <MostrarAlerta @ref="Alert" />
     </main>
 </div>
 @code {
-    private MostrarAlerta Alert { get; set; }
+    [Parameter] public EventCallback OnEvento { get; set; }
+    //[Parameter] public EventCallback<string> OnEventoCarrito { get; set; }
+    private Order carrito;
+    private MostrarAlerta Alert;
 
+    protected override async Task OnInitializedAsync()
+    {
+        carrito = Principal.GetCarrito();
+        Principal.OnChange += OnProductosChanged; //INICIAR LA ACCIÓN
+    }
+    private void OnProductosChanged()
+    {
+        //ACCIÓN: Cargar el carrito actualizado y gatillar
+        carrito = Principal.GetCarrito();
+        StateHasChanged();
+    }
+    //NECESARIO PARA TERMINAR LA ACCIÓN
+    public void Dispose()
+    {
+        Principal.OnChange -= OnProductosChanged; // Desuscríbete del evento
+    }
 
+    //AGREGAR AL CARRITO
+    public async Task AgregarCarrito()
+    {
+        try
+        {
+            if (Principal.Carrito?.Productos?.Count > 0)
+            {
+                ModalService.Show<Carrito>();
+            }
+            else
+            {
+                Alert.ShowAlert("Sin productos seleccionados", $"Primero deberá añadir al carrito un producto para continuar con la compra.", "warning");
+            }
+        }
+        catch (Exception ex)
+        {
+            Alert.DefaultAlert("EN CONSTRUCCIÓN", $"{ex.Message}", "warning");
+        }
+    }
+
+    public void AgregarProducto()
+    {
+        var productos = Principal.GetProductos();
+        if (productos?.Count > 0)
+        {
+            var ultimoId = productos.LastOrDefault().IdProducto + 1;
+
+            Random random = new Random();
+            int numeroRandom = random.Next(10000, 50001);
+            int stockRandom = random.Next(3, 15);
+            int imgRandom = random.Next(1, 4);
+            var producto = Principal.GetProducto(ultimoId, numeroRandom, imgRandom, stockRandom);
+
+            //JS.InvokeVoidAsync("mostrarLimpiar", elementLimpiar);
+            Principal.AgregarProducto(producto);
+
+        }
+    }
+    public async Task Limpiar()
+    {
+        var productos = Principal.GetProductos();
+        if (productos?.Count > 4 || Principal.Carrito?.Productos.Count > 0)
+        {
+            var confirmado = await Alert.ConfirmAlert("¿Estas seguro de vaciar el carrito?", "", "warning");
+            if (confirmado)
+            {
+                if (productos?.Count > 4)
+                {
+                    Principal.Limpiar();
+
+                    await OnEvento.InvokeAsync(null);
+                    Alert.ShowAlert("Productos Eliminados!", "Se han eliminado todos los productos menos los productos principales.", "success");
+
+                }
+                else if (Principal.Carrito?.Productos.Count > 0)
+                {
+                    Principal.LimpiarCarrito();
+                    Alert.ShowAlert("Carrito vaciado!", "Carrito se encuentra sin productos actualmente.", "success");
+
+                }
+                else
+                {
+                    Alert.ShowAlert("Informativo", "No se ha podido eliminar los productos, los productos principales no se eliminan.", "warning");
+                }
+            }
+        }
+        else
+        {
+            Alert.ShowAlert("Informativo", "No se ha podido eliminar los productos, los productos principales no se eliminan.", "warning");
+        }
+    }
     private void OtrosProductos(MouseEventArgs e)
     {
         Alert.DefaultAlert("EN CONSTRUCCIÓN", "", "warning");

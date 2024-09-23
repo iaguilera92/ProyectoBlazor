@@ -5,7 +5,7 @@ namespace SitioWeb;
 public class Principal
 {
     //PARAMETROS GENERALES (PRINCIPALES)
-    public bool ShowingConfigureDialog { get; set; }
+    public bool MobileMenu { get; set; }
     public static List<Productos> Productos { get; set; }
     public static Order Carrito { get; set; } = new Order();
     public event Action OnChange; //INYECCIÓN DE DEPENDENCIAS
@@ -67,16 +67,6 @@ public class Principal
         }
         return url;
     }
-    public void CancelarConfiguracion()
-    {
-        ShowingConfigureDialog = false;
-    }
-
-    public void ConfirmarConfiguracion()
-    {        
-        ShowingConfigureDialog = false;
-    }
-
     public void RemoverProducto(Productos producto)
     {
         if (Carrito.Productos.Any(p => p.IdProducto == producto.IdProducto))
