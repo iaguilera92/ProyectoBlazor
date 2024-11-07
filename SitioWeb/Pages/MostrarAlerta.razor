@@ -2,116 +2,124 @@
 @inject IJSRuntime JS
 
 @code {
-        public async void ShowAlert(string titulo, string mensaje, string icono)
+    public async void ShowBlackScreen()
+    {
+        await JS.InvokeVoidAsync("BlackScreen");
+    }
+    public async void RemoveBlackScreen()
+    {
+        await JS.InvokeVoidAsync("RemoveBlackScreen");
+    }
+    public async void ShowAlert(string titulo, string mensaje, string icono)
+    {
+        await JS.InvokeVoidAsync("Swal.fire", new
         {
-            await JS.InvokeVoidAsync("Swal.fire", new
-            {
-                title = titulo,
-                text = mensaje,
-                icon = icono, // Puedes cambiar "success" por "warning", "error", "info", etc.
-                confirmButtonText = "Aceptar"
-            });
-        }
+            title = titulo,
+            text = mensaje,
+            icon = icono, // Puedes cambiar "success" por "warning", "error", "info", etc.
+            confirmButtonText = "Aceptar"
+        });
+    }
 
-        public async Task<bool> ConfirmAlert(string titulo, string mensaje, string icono, string img = null)
+    public async Task<bool> ConfirmAlert(string titulo, string mensaje, string icono, string img = null)
+    {
+        if(img == null)
         {
-            if(img == null)
-            {
-                img = "https://cdn-icons-png.flaticon.com/512/5952/5952781.png";
-            }
-            bool isConfirmed = await JS.InvokeAsync<bool>("ConfirmAlert", titulo, mensaje, icono, img);
+            img = "https://cdn-icons-png.flaticon.com/512/5952/5952781.png";
+        }
+        bool isConfirmed = await JS.InvokeAsync<bool>("ConfirmAlert", titulo, mensaje, icono, img);
 
-            if (isConfirmed)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        public async Task<bool> ConfirmAlertGreen(string titulo, string mensaje, string icono, string img)
+        if (isConfirmed)
         {
-            bool isConfirmed = await JS.InvokeAsync<bool>("ConfirmAlertGreen", titulo, mensaje, icono, img);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public async Task<bool> ConfirmAlertGreen(string titulo, string mensaje, string icono, string img)
+    {
+        bool isConfirmed = await JS.InvokeAsync<bool>("ConfirmAlertGreen", titulo, mensaje, icono, img);
 
-            if (isConfirmed)
+        if (isConfirmed)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public async void DefaultAlert(string titulo, string mensaje, string icono)
+    {
+        await JS.InvokeVoidAsync("Swal.fire", new
+        {
+            position = "center",
+            imageUrl = "https://i.gifer.com/1FA.gif",
+            imageWidth = 320,
+            imageHeight = 270,
+            title = titulo,
+            text = mensaje,
+            showConfirmButton = false,
+            timer = 2500
+        });
+    }
+    public async Task CustomAlert(string titulo, string mensaje, string icono, Order carrito, string imgUrl)
+    {
+        await JS.InvokeVoidAsync("Swal.fire", new
+        {
+            html = HtmlCarrito(titulo, mensaje, carrito, imgUrl),
+            position = "bottom",
+            showClass = new
             {
-                return true;
+                popup = "animate__animated animate__fadeInUp animate__faster"
+            },
+            hideClass = new
+            {
+                popup = "animate__animated animate__fadeOutDown animate__faster"
+            },
+            grow = "row",
+            width = "55%", // Ajuste dinámico al 90% del ancho de la pantalla   
+            height = "25%",
+            showConfirmButton = false,
+            showCloseButton = true,
+            background = "white", //FONDO SWAL rgb(0 0 0)
+            color = "black", // COLOR LETRA
+            timer = 992100,
+            customClass = new
+            {
+                title = "swal-title", // CSS DE ACÁ
+                image = "swal-image" // CSS DE ACÁ
             }
-            else
-            {
-                return false;
-            }
-        }
-        public async void DefaultAlert(string titulo, string mensaje, string icono)
-        {
-            await JS.InvokeVoidAsync("Swal.fire", new
-            {
-                position = "center",
-                imageUrl = "https://i.gifer.com/1FA.gif",
-                imageWidth = 320,
-                imageHeight = 270,
-                title = titulo,
-                text = mensaje,
-                showConfirmButton = false,
-                timer = 2500
-            });
-        }
-        public async Task CustomAlert(string titulo, string mensaje, string icono, Order carrito, string imgUrl)
-        {
-            await JS.InvokeVoidAsync("Swal.fire", new
-            {
-                html = HtmlCarrito(titulo, mensaje, carrito, imgUrl),
-                position = "bottom",
-                showClass = new
-                {
-                    popup = "animate__animated animate__fadeInUp animate__faster"
-                },
-                hideClass = new
-                {
-                    popup = "animate__animated animate__fadeOutDown animate__faster"
-                },
-                grow = "row",
-                width = "55%", // Ajuste dinámico al 90% del ancho de la pantalla   
-                height = "25%",
-                showConfirmButton = false,
-                showCloseButton = true,
-                background = "white", //FONDO SWAL rgb(0 0 0)
-                color = "black", // COLOR LETRA
-                timer = 2100,
-                customClass = new
-                {
-                    title = "swal-title", // CSS DE ACÁ
-                    image = "swal-image" // CSS DE ACÁ
-                }
-            });
-        }
-        public string HtmlCarrito(string titulo, string mensaje, Order carrito, string imgUrl)
-        {
-            var totalCarrito = carrito.Productos.Sum(p => p.Valor);
-            var totalCarritoPesos = totalCarrito.ToString("N0", new System.Globalization.CultureInfo("es-CL"));
+        });
+    }
+    public string HtmlCarrito(string titulo, string mensaje, Order carrito, string imgUrl)
+    {
+        var totalCarrito = carrito.Productos.Sum(p => p.Valor);
+        var totalCarritoPesos = totalCarrito.ToString("N0", new System.Globalization.CultureInfo("es-CL"));
 
-            //<img src='{imgUrl}' style='width:75%; height:60%; margin-bottom:20px;'>
-            //<h2 style='margin-bottom: 4%;'>{titulo}</h2>
-            string html = $@"
-            <br/>
-            <center style='display: block'>
-            <div class='panel panel-primary'>
-             <div class='panel-heading'>
-                 <div class='row'>
-                     <div class='icono-spinner-cargar' style='margin-left: 3%; margin-top: 1%; margin-bottom: 0'>
-                        <i class='icono-spinner material-icons'>shopping_cart</i>
-                     </div>
-                     <div class='col-xs-9 text-right'>
-                         <div class='huge'>Agregado al carro</div>
-                         <div class='huge-x2'>{mensaje}</div>
-                     </div>
+        //<img src='{imgUrl}' style='width:75%; height:60%; margin-bottom:20px;'>
+        //<h2 style='margin-bottom: 4%;'>{titulo}</h2>
+        string html = $@"
+        <br/>
+        <center style='display: block'>
+        <div class='panel panel-primary'>
+         <div class='panel-heading'>
+             <div class='row'>
+                 <div class='icono-spinner-cargar'>
+                    <i class='icono-spinner material-icons'>shopping_cart</i>
                  </div>
-             </div>   
-            </center>";
+                 <div class='col-xs-9 text-right' style='width: 65% !important;'>
+                     <div class='huge'>Agregado al carro</div>
+                     <div class='huge-x2'>{mensaje}</div>
+                 </div>
+             </div>
+         </div>   
+        </center>";
 
-            return html;
-        }
+        return html;
+    }
 }
 <script>
     function ConfirmAlert(titulo, mensaje, icono, img) {

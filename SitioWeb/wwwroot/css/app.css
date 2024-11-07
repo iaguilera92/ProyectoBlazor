@@ -504,7 +504,6 @@ a.add {
     width: 150px;
     height: 150px;
     position: relative;
-    margin-bottom: 8%;
 }
 
 .icono-spinner-cargar::before {

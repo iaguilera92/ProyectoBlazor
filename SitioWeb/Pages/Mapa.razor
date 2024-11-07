@@ -1,0 +1,36 @@
+﻿@using Entidades
+
+@inject Principal Principal
+@inject IJSRuntime JS
+
+<MostrarAlerta @ref="Alert" />
+<div id="map"></div> 
+<script async
+        src="https://maps.googleapis.com/maps/api/js?key=TU_CLAVE_API&callback=initMap">
+</script>
+
+<script>
+    // Función de inicialización del mapa
+    function initMap() {
+        // Configuración del mapa (coordenadas y zoom)
+        const ubicacion = { lat: -33.4489, lng: -70.6693 };
+        const mapa = new google.maps.Map(document.getElementById("map"), {
+            zoom: 10,
+            center: ubicacion
+        });
+
+        // Marcador en el mapa
+        new google.maps.Marker({
+            position: ubicacion,
+            map: mapa,
+            title: "Ubicación inicial"
+        });
+    }
+</script>
+
+
+@code {
+    //PARAMETROS GENERALES
+    [CascadingParameter] Blazored.Modal.BlazoredModalInstance ModalInstance { get; set; }
+    public MostrarAlerta Alert;
+}

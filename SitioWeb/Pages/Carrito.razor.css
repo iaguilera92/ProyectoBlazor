@@ -173,7 +173,7 @@
 }
 
     .btn-5:hover {
-        color: rgb(34, 193, 34);
+        /*color: rgb(34, 193, 34);*/
         background: transparent;
         box-shadow: none;
     }
