@@ -202,41 +202,37 @@
                 transform: translateX(0) skewX(-20deg);
             }
         }
+
+        .agrandar-botones {
+            transform: scale(0);
+            animation: agrandar-botones 1.1s ease-in-out forwards;
+        }
+
+        @@keyframes agrandar-botones {
+            0% {
+                transform: scale(0);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* CAPA NEGRA */
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            display: none; /* Cambiado a 'none' para que esté oculto inicialmente */
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
     </style>
 </div>
-
-
-<style>
-    .agrandar-botones {
-        transform: scale(0);
-        animation: agrandar-botones 1.1s ease-in-out forwards;
-    }
-
-    @@keyframes agrandar-botones {
-        0% {
-            transform: scale(0);
-        }
-
-        100% {
-            transform: scale(1);
-        }
-    }
-
-    /* CAPA NEGRA */
-    #overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: black;
-        display: none; /* Cambiado a 'none' para que esté oculto inicialmente */
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-    }
-</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.1/gsap.min.js"></script>
 
 <script>
     function BlackScreen() {
@@ -248,109 +244,7 @@
 
         const overlay = document.getElementById("overlay");
         overlay.style.display = "none";
-    }
-    var button = document.getElementById("btnDelivery");
-    var buttonWidth = button.Width;
-
-    document.querySelectorAll(".truck-button").forEach((button) => {
-        button.addEventListener("click", (e) => {
-            e.preventDefault();
-
-            let box = button.querySelector(".box"),
-                truck = button.querySelector(".truck");
-
-            if (!button.classList.contains("done")) {
-                if (!button.classList.contains("animation")) {
-                    button.classList.add("animation");
-                    if (gsap != null) {
-                        gsap.to(button, {
-                            "--box-s": 1,
-                            "--box-o": 1,
-                            duration: 0.3,
-                            delay: 0.5
-                        });
-
-                        gsap.to(box, {
-                            x: 0,
-                            duration: 0.4,
-                            delay: 0.7
-                        });
-
-                        gsap.to(button, {
-                            "--hx": -5,
-                            "--bx": 50,
-                            duration: 0.18,
-                            delay: 0.92
-                        });
-
-                        gsap.to(box, {
-                            y: 0,
-                            duration: 0.1,
-                            delay: 1.15
-                        });
-
-                        gsap.set(button, {
-                            "--truck-y": 0,
-                            "--truck-y-n": -26
-                        });
-
-                        gsap.to(button, {
-                            "--truck-y": 1,
-                            "--truck-y-n": -25,
-                            duration: 0.2,
-                            delay: 1.55,
-                            onComplete() {
-                                gsap.timeline({
-                                    onComplete() {
-                                        button.classList.add("done");
-                                    }
-                                })
-                                    .to(truck, {
-                                        x: 0,
-                                        duration: 0.4
-                                    })
-                                    .to(truck, {
-                                        // x: buttonWidth * 0.5,
-                                        x: 150,
-                                        duration: 1
-                                    })
-                                    .to(truck, {
-                                        // x: buttonWidth * 0.48,
-                                        x: 140,
-                                        duration: 0.6
-                                    })
-                                    .to(truck, {
-                                        // x: buttonWidth, // Mueve el truck al 50% del ancho del botón,
-                                        x: 465, 
-                                        duration: 0.5
-                                    });                                
-                            }
-                        });
-                    }
-                }
-            } else {
-                button.classList.remove("animation", "done");
-                gsap.set(truck, {
-                    x: 4
-                });
-                gsap.set(button, {
-                    "--progress": 0,
-                    "--hx": 0,
-                    "--bx": 0,
-                    "--box-s": 0.5,
-                    "--box-o": 0,
-                    "--truck-y": 0,
-                    "--truck-y-n": -26
-                });
-                gsap.set(box, {
-                    x: -24,
-                    y: -6
-                });
-            }
-        });
-    });
-
-
+    }   
 </script>
 <!--BLAZOR-->
 @code {

@@ -2,6 +2,7 @@
 
 @inject Principal Principal
 @inject IJSRuntime JS
+@using Microsoft.JSInterop
 
 <MostrarAlerta @ref="Alert" />
 <div id="mapaOverlay">
@@ -9,31 +10,22 @@
 
 @* MAPTILER *@
 <div id="map" class="mapa-css" style="width: 98.9%; height: 61rem; overflow: hidden;"></div>
- <div id="modalOverlay" class="modal-overlay"></div>
         <div id="modalWindow" class="modal" style="width: 50%;height: auto;">
             <span class="close-btn" id="closeModal" @onclick="CerrarMapaModal">&times;</span>
-      <div class="modal-content"><div class="modal-header">
-          <h4 class="modal-title">
-            <span class="glyphicon glyphicon-star"></span> Presencial
-          </h4>
-          </div>
-                <div class="modal-body">
+             <div class="modal-content">
+           <div class="modal-body">
                     <ng-form name="nameDialog" novalidate="" role="form" class="ng-pristine ng-invalid ng-invalid-required" style="text-align: left;">
               <div class="form-group input-group-lg" ng-class="{true: 'has-error'}[nameDialog.username.$dirty &amp;&amp; nameDialog.username.$invalid]">
                   @*FULL CALENDAR*@
-                  <label class="control-label" for="username" style="font-weight: bold">Fecha Encuentro:</label>
-                      <div id='calendar' style="width:100%; height: 600px;"></div>
-                  <br />
-                  <label class="control-label" for="username" style="font-weight: bold">Hora Encuentro:</label>
-                  <input type="text" class="form-control ng-pristine ng-invalid ng-invalid-required" name="username" id="username" ng-model="user.name" ng-keyup="hitEnter($event)" required="">
-                  <span class="help-block">Elija la hora que más le acomode según horarios.</span>
+                  <label class="control-label" for="username" style="font-weight: bold">Seleccionar día de encuentro:</label>
+                      <div id='calendar' style="width:100%; height: 600px;"></div>                
               </div>
               </ng-form>
               </div>
               <div class="modal-footer">
-                   <button @onclick="CerrarMapaModal" class="custom-btn btn-3">Confirmar Encuentro</button>
-          </div>
-      </div>
+                    <button @onclick="CerrarMapa" class="custom-btn btn-3"><span>Confirmar Encuentro</span></button>
+    </div>
+</div>
  </div>
 </center>
 </div>
@@ -45,27 +37,35 @@
 
     private async Task CerrarMapaModal(MouseEventArgs e)
     {
+        await JS.InvokeVoidAsync("cerrarModal");
+    }
+    private async Task CerrarMapa2(MouseEventArgs e)
+    {
+        await JS.InvokeVoidAsync("cerrarModal");
         await JS.InvokeVoidAsync("desactivarMapaOverlay");
         Alert.ShowAlert("Confirmado el encuentro!", "Para finalizar realizar la reserva de la compra.", "success");
     }
-    private async Task CerrarMapa(MouseEventArgs e)
-    {        
-        // Alert.ShowAlert("Confirmado el encuentro!","Para finalizar realizar la reserva de la compra.","success");
+    [JSInvokable("CerrarMapaJS")]
+    public void CerrarMapa()
+    {
+        // Lógica para cerrar el mapa
+        Alert.ShowAlert("Confirmado el encuentro!", "Para finalizar realizar la reserva de la compra.", "success");
     }
 }
 
 <script type="text/javascript">
     maptilersdk.config.apiKey = 'rvHUmSHpbNCQdRfaXg1e';
 
-    // Mostrar la ventana modal
+    //MODAL
     function mostrarModal() {
         const modal = document.getElementById("modalWindow");
-        const overlay = document.getElementById("modalOverlay");
         modal.style.display = "block";
-        overlay.style.display = "block";
     }
 
-
+    function cerrarModal() {
+        const modal = document.getElementById("modalWindow");
+        modal.style.display = "none";
+    }
     const map = new maptilersdk.Map({
         container: 'map',
         style: "streets-v2",
@@ -73,6 +73,11 @@
         zoom: 15.6,
     });
 
+
+    // Método para inicializar la referencia a Blazor
+    window.initializeBlazorComponent = function (dotNetHelper) {
+        window.blazorComponent = dotNetHelper;
+    };
     window.activarMapaOverlay = function () {
         const elemento = document.getElementById('mapaOverlay');
         if (elemento) {
@@ -88,26 +93,114 @@
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
-            locale: 'es',  // Establece el idioma en español
+            locale: 'es',
             headerToolbar: {
-                left: 'prev,next today', // Los botones de la izquierda
-                center: 'title', // El título (mes actual)
-                right: 'dayGridMonth' // Las vistas de mes, semana, día
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth'
             },
-            events: [
-                {
-                    title: 'Reserva!', // Título del evento
-                    start: new Date(), // Establecer la fecha actual
-                    allDay: true, // Todo el día
-                    description: 'Este es un mensaje de prueba', // Descripción opcional
-                    color: 'blue', // Color del evento
-                    textColor: 'white' // Color del texto
+            events: function (fetchInfo, successCallback, failureCallback) {
+                var events = [];
+                var today = new Date();
+                var futureDate = new Date(today);
+                futureDate.setMonth(today.getMonth() + 3);
+
+                for (var date = new Date(today); date <= futureDate; date.setDate(date.getDate() + 1)) {
+                    if (date.getTime() === (today.getTime() + (3 * 24 * 60 * 60 * 1000))) {
+                        events.push({
+                            title: 'NO DISPONIBLE',
+                            start: new Date(date),
+                            allDay: true,
+                            color: 'red',
+                            textColor: 'white'
+                        });
+                    } else if (date.getTime() === (today.getTime() + (8 * 24 * 60 * 60 * 1000))) {
+                        events.push({
+                            title: 'NO DISPONIBLE',
+                            start: new Date(date),
+                            allDay: true,
+                            color: 'red',
+                            textColor: 'white'
+                        });
+                    } else {
+                        events.push({
+                            title: 'Reserva!',
+                            start: new Date(date),
+                            allDay: true,
+                            color: 'blue',
+                            textColor: 'white'
+                        });
+                    }
                 }
-            ]
+                successCallback(events);
+            },
+            validRange: {
+                start: new Date().toISOString().split('T')[0]
+            },
+            dateClick: function (info) {
+                var selectedDate = new Date(info.dateStr);
+                var isNoDisponible = false;
+
+                calendar.getEvents().forEach(function (event) {
+                    var eventStart = new Date(event.start.toDateString());
+                    var selectedDay = new Date(selectedDate.toDateString());
+
+                    if (eventStart.getTime() === selectedDay.getTime() && event.title === "NO DISPONIBLE") {
+                        isNoDisponible = true;
+                    }
+                });
+
+                if (isNoDisponible) {
+                    alert("No se puede seleccionar este día, está marcado como NO DISPONIBLE.");
+                } else {
+                    var day = selectedDate.getDate();
+                    var month = selectedDate.getMonth() + 1;
+                    var year = selectedDate.getFullYear();
+                    alert('Fecha seleccionada: ' + day + '/' + month + '/' + year);
+
+                    DotNet.invokeMethodAsync('SitioWeb', 'CerrarMapaJS')
+                        .then(() => {
+                            console.log('Método C# invocado correctamente.');
+                        })
+                        .catch(error => {
+                            console.error('Error al invocar el método C#: ', error);
+                        });
+                }
+            },
+            eventClick: function (info) {
+                var eventDate = info.event.start;
+                var day = eventDate.getDate();
+                var month = eventDate.getMonth() + 1;
+                var year = eventDate.getFullYear();
+                alert('Fecha seleccionada: ' + day + '/' + month + '/' + year + ' (SE PUEDE RESERVAR)');
+
+                DotNet.invokeMethodAsync('SitioWeb', 'CerrarMapaJS')
+                    .then(() => {
+                        console.log('Método C# invocado correctamente.');
+                    })
+                    .catch(error => {
+                        console.error('Error al invocar el método C#: ', error);
+                    });
+
+            },
+            datesSet: function () {
+                setTimeout(function () {
+                    var monthButton = document.querySelector(".fc-dayGridMonth-button");
+                    if (monthButton) {
+                        monthButton.click();
+                    } else {
+                        console.error("El botón de vista mensual no se encontró.");
+                    }
+                }, 0);
+                var days = document.querySelectorAll('.fc-scrollgrid-sync-table');
+                days.forEach(function (day) {
+                    day.style.cursor = 'pointer';
+                });
+            }
         });
         calendar.render();
-        //FIN FULL CALENDAR
     };
+   
 
     window.desactivarMapaOverlay = function () {
         const elemento = document.getElementById('mapaOverlay');
