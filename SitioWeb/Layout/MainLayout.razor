@@ -6,6 +6,7 @@
 @inject IJSRuntime JS
 @inject Principal Principal
 @inject Blazored.Modal.Services.IModalService ModalService
+@inject NavigationManager NavigationManager
 
 <style class="darkreader darkreader--sync" media="screen"></style>
 <div class="page">
@@ -37,7 +38,7 @@
                             <ul id="main-nav" class="main-nav tf_clearfix tf_box" data-init="true">
                                 <li class="menu-item-page-2214 menu-item menu-item-type-post_type menu-item-object-page menu-item-home current-menu-item page_item page-item-2214 current_page_item menu-item-4015"><a href="" aria-current="page">Inicio</a> </li>
                                 <li @onclick="OtrosProductos" class="menu-item-page-2891 menu-item menu-item-type-post_type menu-item-object-page menu-item-4009" ><a>Otros Productos</a></li>
-                                <li @onclick="OtrosProductos" class="menu-item-page-417 menu-item menu-item-type-post_type menu-item-object-page menu-item-4011"><a>Nosotros</a></li>
+                                <li @onclick="Transbank" class="menu-item-page-417 menu-item menu-item-type-post_type menu-item-object-page menu-item-4011"><a>Transbank</a></li>
                                 <li class="menu-item-page-31 menu-item menu-item-type-post_type menu-item-object-page menu-item-4014"><a>Iniciar Sesión</a></li>
                                 <!--ADMINISTRACIÓN-->
                                 <li id="AdministracionApp">
@@ -213,5 +214,9 @@
     private async Task OtrosProductos(MouseEventArgs e)
     {
         await JS.InvokeVoidAsync("activarMapaOverlay");
+    }
+    private void Transbank(MouseEventArgs e)
+    {
+        NavigationManager.NavigateTo("/transbank");
     }
 }

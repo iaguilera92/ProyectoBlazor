@@ -12,6 +12,8 @@
     <PackageReference Include="Blazored.Modal" Version="7.3.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.8" PrivateAssets="all" />
+    <PackageReference Include="TransbankPosSDK" Version="4.0.0" />
+    <PackageReference Include="TransbankSDK" Version="7.0.1" />
   </ItemGroup>
 
   <ItemGroup>

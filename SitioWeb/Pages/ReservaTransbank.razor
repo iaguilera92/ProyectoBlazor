@@ -1,0 +1,50 @@
+﻿@page "/transbank"
+@using static SitioWeb.Principal
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<h3>Resumen de Compra</h3>
+<p>Orden: @BuyOrder</p>
+<p>Monto: @Amount CLP</p>
+<button @onclick="IniciarPago">Pagar</button>
+
+@code {
+    private string BuyOrder = Guid.NewGuid().ToString(); // Orden única
+    private string SessionId = Guid.NewGuid().ToString(); // Sesión única
+    private int Amount = 10000; // Monto de ejemplo
+    private string ReturnUrl = "https://mi-sitio.com/return"; // URL de retorno
+
+    private  async Task IniciarPago()
+    {
+        try
+        {
+            var Ambiente = new WebpayIntegrationTypeQA(); //QA
+
+            // Configurar las opciones de la transacción
+            var options = new Transbank.Common.Options(
+                 commerceCode: "597055555532",
+                 apiKey: "INTEGRACION_API_KEY",
+                 integrationType: Ambiente, // Ambiente de prueba
+                 httpClient: HttpClient
+             );
+
+
+            var transaction = new Transbank.Webpay.WebpayPlus.Transaction(options);
+
+            // Crear la transacción en Transbank
+            var result = transaction.Create(
+                buyOrder: BuyOrder,
+                sessionId: SessionId,
+                amount: Amount,
+                returnUrl: ReturnUrl
+            );
+
+            // Redirigir al cliente al portal de pagos de Transbank
+            NavigationManager.NavigateTo(result.Url, true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al iniciar el pago: {ex.Message}");
+        }
+    }
+}

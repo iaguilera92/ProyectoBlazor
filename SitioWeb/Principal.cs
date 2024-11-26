@@ -1,4 +1,5 @@
 ﻿using Entidades;
+using Transbank.Common;
 
 namespace SitioWeb;
 
@@ -108,5 +109,17 @@ public class Principal
     {
         var valorPesos = valor.ToString("N0", new System.Globalization.CultureInfo("es-CL"));
         return $"${valorPesos}";
-    }    
+    }
+    //AMBIENTES
+    public class WebpayIntegrationTypeQA : IIntegrationType
+    {
+        public string Key => "QA"; // La clave que identifica este entorno
+        public string ApiBase => "https://webpay3gint.transbank.cl"; // URL base de la API para el entorno de pruebas
+    }
+
+    public class WebpayIntegrationTypePRD : IIntegrationType
+    {
+        public string Key => "PRD"; // La clave para producción
+        public string ApiBase => "https://webpay3g.transbank.cl"; // URL base de la API para producción
+    }
 }
