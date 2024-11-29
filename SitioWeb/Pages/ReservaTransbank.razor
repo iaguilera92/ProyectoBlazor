@@ -1,50 +1,47 @@
-﻿@page "/transbank"
+﻿@using Transbank.Webpay.TransaccionCompleta.Responses
 @using static SitioWeb.Principal
 @inject HttpClient HttpClient
-@inject NavigationManager NavigationManager
 
-<h3>Resumen de Compra</h3>
-<p>Orden: @BuyOrder</p>
-<p>Monto: @Amount CLP</p>
-<button @onclick="IniciarPago">Pagar</button>
+@page "/transbank"
+@inject TransbankApiService TransbankApiService
+
+<h3>Crear Transacción con Transbank</h3>
+
+@if (IsLoading)
+{
+    <p>Creando transacción...</p>
+}
+else if (Result != null)
+{
+    <p>Transacción creada con éxito.</p>
+    <p><strong>URL:</strong> @Result.OriginalRequest</p>
+    <p><strong>Token:</strong> @Result.Token</p>
+    <a href="@Result.OriginalRequest" target="_blank">Ir a Webpay</a>
+}
+else
+{
+    <button @onclick="CreateTransaction">Crear Transacción</button>
+}
 
 @code {
-    private string BuyOrder = Guid.NewGuid().ToString(); // Orden única
-    private string SessionId = Guid.NewGuid().ToString(); // Sesión única
-    private int Amount = 10000; // Monto de ejemplo
-    private string ReturnUrl = "https://mi-sitio.com/return"; // URL de retorno
+    private bool IsLoading = false;
+    private CreateResponse? Result;
 
-    private  async Task IniciarPago()
+    private async Task CreateTransaction()
     {
+        IsLoading = true;
         try
         {
-            var Ambiente = new WebpayIntegrationTypeQA(); //QA
-
-            // Configurar las opciones de la transacción
-            var options = new Transbank.Common.Options(
-                 commerceCode: "597055555532",
-                 apiKey: "INTEGRACION_API_KEY",
-                 integrationType: Ambiente, // Ambiente de prueba
-                 httpClient: HttpClient
-             );
-
-
-            var transaction = new Transbank.Webpay.WebpayPlus.Transaction(options);
-
-            // Crear la transacción en Transbank
-            var result = transaction.Create(
-                buyOrder: BuyOrder,
-                sessionId: SessionId,
-                amount: Amount,
-                returnUrl: ReturnUrl
-            );
-
-            // Redirigir al cliente al portal de pagos de Transbank
-            NavigationManager.NavigateTo(result.Url, true);
+            // Llama al servicio para crear la transacción a través de la API
+            Result = await TransbankApiService.CreateTransactionAsync();
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error al iniciar el pago: {ex.Message}");
+            Console.WriteLine($"Error al crear la transacción: {ex.Message}");
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 }

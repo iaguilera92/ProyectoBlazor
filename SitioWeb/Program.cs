@@ -12,4 +12,5 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddScoped<Principal>();
 builder.Services.AddBlazoredModal();
 
+
 await builder.Build().RunAsync();

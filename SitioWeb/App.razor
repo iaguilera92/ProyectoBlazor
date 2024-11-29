@@ -1,16 +1,28 @@
 ﻿@using Blazored.Modal
+@using SitioWeb.Pages
 
 <CascadingBlazoredModal> <!--PARA MODAL-->
 <Router AppAssembly="@typeof(Program).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        <RouteView RouteData="@routeData" DefaultLayout="@DetermineLayout(routeData.PageType)" />
     </Found>
     <NotFound>
         <PageTitle>Proyecto Blazor</PageTitle>
         <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
+            <p role="alert">No se ha encontrado la página</p>
         </LayoutView>
     </NotFound>
 </Router>
 </CascadingBlazoredModal>
+
+@code {
+    private Type? DetermineLayout(Type? pageType)
+    {
+        // Define qué páginas no usarán un layout
+        if (pageType == typeof(ReservaTransbank))
+        {
+            return null; // Sin layout
+        }
+        return typeof(MainLayout); // Layout predeterminado para otras páginas
+    }
+}
