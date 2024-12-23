@@ -223,92 +223,43 @@
     {
         try
         {
-            var result = TransbankService.CreateTransaction();
-            // var random = new Random();
+            if (Principal.Carrito?.Productos.Count > 0)
+            {
+                var random = new Random();
 
-            // var buyOrder = random.Next(999999999).ToString();
-            // var sessionId = random.Next(999999999).ToString();
-            // var amount = random.Next(1000, 999999);
-            // var returnUrl = "https://localhost:5002/ReservaTransbank";
+                var totalCarrito = Principal.Carrito.GetPrecioTotal();
 
-
-            // // Definir el JSON con los datos a enviar
-            // var options = new Options(
-            //             "597055555532", // Rut del comercio
-            //             "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C", // Llave secreta del comercio
-            //             WebpayIntegrationType.Test  // Tipo de integración (Test en este caso)
-            //         ); 
-
-            // var result = TransbankService.CreateTransaction(buyOrder, sessionId, amount, returnUrl);
-
-
-
-            // var transactionData = new
-            // {
-            //     buy_order = buyOrder,
-            //     session_id = sessionId,
-            //     amount = amount,
-            //     return_url = returnUrl
-            // };
-
-            // // Llamar al script de JavaScript pasando el JSON
-            // await JS.InvokeVoidAsync("submitWebpayForm", transactionData);
+                if (totalCarrito > 0)
+                {
+                    var transactionData = new TransactionDataTo
+                        {
+                            buy_order = random.Next(999999999).ToString(),
+                            session_id = random.Next(999999999).ToString(),
+                            amount = Convert.ToInt32(totalCarrito),
+                            return_url = "https://localhost:5002/ReservaTransbank"
+                        };
+                    var transactionResponse = await TransbankService.CreateTransaction(transactionData);
+                    if (transactionResponse != null && !transactionResponse.Error)
+                    {
+                        Principal.TransactionResponse = transactionResponse;
+                        NavigationManager.NavigateTo($"{transactionResponse.Url}?token_ws={transactionResponse.Token}", true);
+                    }
+                    else
+                    {
+                        Alert.ShowAlert("Error", "Se han detectado problemas al contactar con Transbank, favor informar a soporte: aguileraignacio1992@gmail.com", "error");
+                    }
+                }
+            }
+            else
+            {
+                Alert.ShowAlert("Sin productos seleccionados", $"Primero deberá añadir al carrito un producto para continuar con la compra.", "warning");
+            }
         }
         catch (Exception ex)
         {
-            
-            throw;
+            Alert.ShowAlert("Error", "Se han detectado problemas al contactar con Transbank, favor informar a soporte: aguileraignacio1992@gmail.com", "error");
+
         }       
     }
     
-    private async Task Transbank(MouseEventArgs e)
-    {
-        try
-        {
-                       //API
-            // var response = await HttpClient.PostAsync("https://localhost:7000/Transbank/PagoSimple", null);
-
-            // // Verificar si la respuesta es exitosa
-            // if (response.IsSuccessStatusCode)
-            // {
-            //     // Leer la respuesta (string) y asignarla a la variable
-            //     apiResponse = await response.Content.ReadAsStringAsync();
-            // }
-            // else
-            // {
-            //     apiResponse = "Error al llamar a la API";
-            // }
-        }
-        catch (Exception ex)
-        {
-            
-        }
-    }
 }
-<script>
-    window.submitWebpayForm = function (transactionData) {
-        // Crear un formulario dinámico
-        var form = document.createElement('form');
-        form.method = 'POST';
-        form.action = 'https://webpay3gint.transbank.cl/rswebpaytransaction/api/webpay/v1.0/transactions';
-        // form.action = 'https://webpay3gint.transbank.cl/rswebpaytransaction/api/webpay/v1.0/transactions';
-
-        // Crear un campo oculto para cada propiedad del JSON
-        for (var key in transactionData) {
-            if (transactionData.hasOwnProperty(key)) {
-                var input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = key;
-                input.value = transactionData[key];
-
-                // Agregar el campo al formulario
-                form.appendChild(input);
-            }
-        }
-
-        // Enviar el formulario
-        document.body.appendChild(form);
-        form.submit();
-    };
-
-</script>

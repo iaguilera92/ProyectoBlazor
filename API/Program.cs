@@ -1,5 +1,3 @@
-using API.Services;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Registrar HttpClient

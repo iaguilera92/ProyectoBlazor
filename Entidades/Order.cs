@@ -23,6 +23,7 @@ public class Order
     public string GetFormattedTotalPrice() => GetPrecioTotal().ToString("0.00");
     public decimal valorDeliveryMin { get; set; } = 3500; //DEFAULT
     public decimal valorDeliveryMax { get; set; } = 4500; //DEFAULT
+    public DateTime FechaReserva { get; set; }
 }
 
 [JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Default, PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]

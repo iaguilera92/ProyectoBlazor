@@ -11,4 +11,8 @@
     <PackageReference Include="TransbankSDK" Version="7.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Entidades\Entidades.csproj" />
+  </ItemGroup>
+
 </Project>

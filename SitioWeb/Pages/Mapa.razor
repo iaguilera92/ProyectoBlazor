@@ -2,6 +2,7 @@
 
 @inject Principal Principal
 @inject IJSRuntime JS
+@inject NavigationManager NavigationManager
 @using Microsoft.JSInterop
 
 <MostrarAlerta @ref="Alert" />
@@ -23,10 +24,10 @@
               </ng-form>
               </div>
               <div class="modal-footer">
-                    <button @onclick="CerrarMapa" class="custom-btn btn-3"><span>Confirmar Encuentro</span></button>
-    </div>
-</div>
- </div>
+                    <button @onclick="CerrarMapa2" class="custom-btn btn-3"><span>Confirmar Encuentro</span></button>
+                </div>
+            </div>
+        </div>
 </center>
 </div>
 
@@ -41,9 +42,47 @@
     }
     private async Task CerrarMapa2(MouseEventArgs e)
     {
-        await JS.InvokeVoidAsync("cerrarModal");
-        await JS.InvokeVoidAsync("desactivarMapaOverlay");
-        Alert.ShowAlert("Confirmado el encuentro!", "Para finalizar realizar la reserva de la compra.", "success");
+        try
+        {
+            if (Principal.Carrito?.Productos.Count > 0)
+            {
+                var random = new Random();
+
+                var totalCarrito = Principal.Carrito.GetPrecioTotal();
+
+                if (totalCarrito > 0)
+                {
+                    var transactionData = new TransactionDataTo
+                        {
+                            buy_order = random.Next(999999999).ToString(),
+                            session_id = random.Next(999999999).ToString(),
+                            amount = Convert.ToInt32(totalCarrito),
+                            return_url = "https://localhost:5002/ReservaTransbank"
+                        };
+                    await JS.InvokeVoidAsync("cerrarModal");
+                    await JS.InvokeVoidAsync("desactivarMapaOverlay");
+                    var transactionResponse = await TransbankService.CreateTransaction(transactionData);
+                    if (transactionResponse != null && !transactionResponse.Error)
+                    {
+                        Principal.TransactionResponse = transactionResponse;
+                        NavigationManager.NavigateTo($"{transactionResponse.Url}?token_ws={transactionResponse.Token}", true);
+                    }
+                    else
+                    {
+                        Alert.ShowAlert("Error", "Se han detectado problemas al contactar con Transbank, favor informar a soporte: aguileraignacio1992@gmail.com", "error");
+                    }
+                }
+            }
+            else
+            {
+                Alert.ShowAlert("Sin productos seleccionados", $"Primero deberá añadir al carrito un producto para continuar con la compra.", "warning");
+            }
+        }
+        catch (Exception ex)
+        {
+            Alert.ShowAlert("Error", "Se han detectado problemas al contactar con Transbank, favor informar a soporte: aguileraignacio1992@gmail.com", "error");
+
+        }
     }
     [JSInvokable("CerrarMapaJS")]
     public void CerrarMapa()

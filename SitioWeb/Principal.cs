@@ -11,8 +11,8 @@ public class Principal
     public static Order Carrito { get; set; } = new Order();
     public event Action OnChange; //INYECCIÓN DE DEPENDENCIAS
     public Usuarios Usuario { get; set; }
+    public TransactionResponse TransactionResponse { get; set; }
 
-    
     //EVENTOS-ACCIONES
     private void AddStateChanged() => OnChange?.Invoke(); //CARGAR AGREGADO
     private void ClearStateChanged() => OnChange?.Invoke(); //CARGAR LIMPIAR

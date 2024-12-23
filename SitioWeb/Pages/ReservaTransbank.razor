@@ -1,20 +1,101 @@
 ﻿@page "/ReservaTransbank"
 @inject TransbankService TransbankService
-
-<h3>Realizar Pago con Transbank</h3>
-
-<button class="btn btn-primary" @onclick="CreateTransaction">Crear Transacción</button>
-
-@if (!string.IsNullOrEmpty(actionUrl))
-{
-    <p>Redirigiendo a: <a href="@actionUrl" target="_blank">@actionUrl</a></p>
-}
-
+@using Entidades
+@inject Principal Principal
+@inject IJSRuntime JS
+<div class="video-container">
+<video autoplay muted loop id="background-video">
+    <source src="https://www.connectic.cl/wp-content/uploads/2024/07/136268-764387688_small.mp4" type="video/mp4">            
+</video>
+<center>
+    <div class="modal-overlay inicio-agrandar" id="modal" style="display: flex;">
+        <div class="modal">
+            <button class="close-button" onclick="closeModal()">×</button>
+        </div>
+    </div>
+    <MostrarAlerta @ref="Alert" />
+</center>
+</div>
 @code {
-    private string actionUrl;
+    private MostrarAlerta Alert;
 
-    private async Task CreateTransaction()
+    protected override async Task OnInitializedAsync()
     {
-       
+        Alert.ShowAlert("Se ha pagado correctamente!", $"Se ha agendado la entrega de sus productos para el {Principal.Carrito.FechaReserva}", "success");
     }
 }
+<style>
+    .video-container {
+        position: relative;
+        width: 100%;
+        height: 100vh; /* Altura completa de la ventana */
+        overflow: hidden;
+    }
+
+    #background-video {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        min-width: 100%;
+        min-height: 100%;
+        width: auto;
+        height: auto;
+        transform: translate(-50%, -50%);
+        z-index: 0;
+    }
+    .inicio-agrandar {
+        transform: scale(0);
+        animation: inicio-agrandar 1.0s ease-in-out forwards; /* Animación de 3 segundos */
+    }
+
+    @@keyframes inicio-agrandar {
+        0% {
+            transform: scale(0); /* Tamaño inicial (invisible) */
+        }
+
+        100% {
+            transform: scale(1); /* Tamaño final (normal) */
+        }
+    }
+    /* Estilo del contenedor del modal */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;        
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    /* Estilo del modal */
+    .modal {
+        position: relative;
+        width: 90%;
+        height: 90%;
+        background: url('te_amo.jpg') no-repeat center center/cover;
+        border-radius: 10px;
+        box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Botón para cerrar el modal */
+    .close-button {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background-color: rgba(255, 255, 255, 0.8);
+        border: none;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        font-size: 18px;
+        color: #000;
+        cursor: pointer;
+    }
+</style>

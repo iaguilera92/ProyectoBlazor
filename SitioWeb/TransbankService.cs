@@ -1,24 +1,85 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Entidades;
 using Newtonsoft.Json;
+using RestSharp;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Json;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
-using static System.Net.WebRequestMethods;
+using System.Text;
 
 public class TransbankService
 {
-    private static HttpClient _httpClient;
+    private static HttpClient httpClient = new HttpClient();
 
     public TransbankService()
     {
-
+        //ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
     }
+    public static async Task<TransactionResponse> CreateTransaction(TransactionDataTo transactionData)
+    {
+        var transactionResponse = new TransactionResponse();
+        try
+        {
+            string url = "http://localhost:7000/Transbank/CreateTransaction"; // URL de tu servicio, ajusta según corresponda
+
+            var jsonContent = JsonConvert.SerializeObject(transactionData);
+            var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+            // Realizar la solicitud POST al servicio WebpayController
+            var response = await httpClient.PostAsync(url, content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseData = await response.Content.ReadAsStringAsync();
+                transactionResponse = JsonConvert.DeserializeObject<TransactionResponse>(responseData);
+                return transactionResponse;
+            }
+            else
+            {
+                return new TransactionResponse
+                {
+                    Error = true,
+                    ErrorMessage = $"Error en la solicitud: {response.ReasonPhrase}"
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            return new TransactionResponse
+            {
+                Error = true,
+                ErrorMessage = $"Excepción: {ex.Message}"
+            };
+        }
+    }
+    private static RestResponse ConsumoServicio(string jsonEntrada, string requestPath, RestClient client)
+    {
+        try
+        {
+            var request = new RestRequest(requestPath, Method.Post); // Definimos el tipo de solicitud
+
+            // Añadimos el cuerpo de la solicitud (el JSON)
+            request.AddJsonBody(jsonEntrada);  // Usamos AddJsonBody para pasar el JSON como cuerpo
+
+            // Configuramos las cabeceras si es necesario
+            request.AddHeader("Content-Type", "application/json");
+            request.AddHeader("Tbk-Api-Key-Id", "tu_api_key_id"); // Agrega las cabeceras necesarias para la API
+            request.AddHeader("Tbk-Api-Key-Secret", "tu_api_key_secret");
+
+            request.RequestFormat = DataFormat.Json; // Establecemos el formato de la solicitud como JSON
+
+            // Ejecutamos la solicitud y obtenemos la respuesta
+            return client.Execute(request);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error al consumir el servicio: {ex.Message}", ex);
+        }
+    }
+
+
     public static async Task CreateTransaction()
     {
         // Configurar el HttpClient con BaseAddress
-        _httpClient = new HttpClient
+        httpClient = new HttpClient
         {
             BaseAddress = new Uri("http://localhost:7000/") // Base address de la API
         };
@@ -37,7 +98,7 @@ public class TransbankService
         try
         {
             // Aquí usamos la URL relativa ya que el BaseAddress ya está configurado
-            var response = await _httpClient.PostAsync("Transbank/CreateTransaction", null);
+            var response = await httpClient.PostAsync("Transbank/CreateTransaction", null);
 
             if (response.IsSuccessStatusCode)
             {
@@ -54,16 +115,4 @@ public class TransbankService
             Console.WriteLine($"Error al realizar la transacción: {ex.Message}");
         }
     }    
-
-    // Función personalizada para validar certificados
-    private static bool CustomCertificateValidation(
-        HttpRequestMessage requestMessage,
-        X509Certificate2 certificate,
-        X509Chain chain,
-        SslPolicyErrors sslPolicyErrors)
-    {
-        // Aquí puedes realizar la validación personalizada. Por ejemplo:
-        // Si quieres aceptar todos los certificados, solo devuelve true
-        return true;  // Esto es solo para pruebas. No hacerlo en producción.
-    }
 }
