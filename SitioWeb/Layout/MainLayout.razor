@@ -1,12 +1,15 @@
 ﻿@using SitioWeb.Pages
 @using Entidades
-
 @inherits LayoutComponentBase
-@inject NavigationManager Navigation
 @inject IJSRuntime JS
 @inject Principal Principal
 @inject Blazored.Modal.Services.IModalService ModalService
 @inject NavigationManager NavigationManager
+@inject HttpClient HttpClient
+@inject IServiceProvider ServiceProvider
+@using Transbank.Common;
+@using Transbank.Webpay.Common;
+@using Transbank.Webpay.WebpayPlus
 
 <style class="darkreader darkreader--sync" media="screen"></style>
 <div class="page">
@@ -38,7 +41,7 @@
                             <ul id="main-nav" class="main-nav tf_clearfix tf_box" data-init="true">
                                 <li class="menu-item-page-2214 menu-item menu-item-type-post_type menu-item-object-page menu-item-home current-menu-item page_item page-item-2214 current_page_item menu-item-4015"><a href="" aria-current="page">Inicio</a> </li>
                                 <li @onclick="OtrosProductos" class="menu-item-page-2891 menu-item menu-item-type-post_type menu-item-object-page menu-item-4009" ><a>Otros Productos</a></li>
-                                <li @onclick="Transbank" class="menu-item-page-417 menu-item menu-item-type-post_type menu-item-object-page menu-item-4011"><a>Transbank</a></li>
+                                <li @onclick="SubmitTransaction" class="menu-item-page-417 menu-item menu-item-type-post_type menu-item-object-page menu-item-4011"><a>Transbank</a></li>
                                 <li class="menu-item-page-31 menu-item menu-item-type-post_type menu-item-object-page menu-item-4014"><a>Iniciar Sesión</a></li>
                                 <!--ADMINISTRACIÓN-->
                                 <li id="AdministracionApp">
@@ -215,8 +218,97 @@
     {
         await JS.InvokeVoidAsync("activarMapaOverlay");
     }
-    private void Transbank(MouseEventArgs e)
+
+    private async Task SubmitTransaction()
     {
-        Navigation.NavigateTo("/transbank", forceLoad: true);
+        try
+        {
+            var result = TransbankService.CreateTransaction();
+            // var random = new Random();
+
+            // var buyOrder = random.Next(999999999).ToString();
+            // var sessionId = random.Next(999999999).ToString();
+            // var amount = random.Next(1000, 999999);
+            // var returnUrl = "https://localhost:5002/ReservaTransbank";
+
+
+            // // Definir el JSON con los datos a enviar
+            // var options = new Options(
+            //             "597055555532", // Rut del comercio
+            //             "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C", // Llave secreta del comercio
+            //             WebpayIntegrationType.Test  // Tipo de integración (Test en este caso)
+            //         ); 
+
+            // var result = TransbankService.CreateTransaction(buyOrder, sessionId, amount, returnUrl);
+
+
+
+            // var transactionData = new
+            // {
+            //     buy_order = buyOrder,
+            //     session_id = sessionId,
+            //     amount = amount,
+            //     return_url = returnUrl
+            // };
+
+            // // Llamar al script de JavaScript pasando el JSON
+            // await JS.InvokeVoidAsync("submitWebpayForm", transactionData);
+        }
+        catch (Exception ex)
+        {
+            
+            throw;
+        }       
+    }
+    
+    private async Task Transbank(MouseEventArgs e)
+    {
+        try
+        {
+                       //API
+            // var response = await HttpClient.PostAsync("https://localhost:7000/Transbank/PagoSimple", null);
+
+            // // Verificar si la respuesta es exitosa
+            // if (response.IsSuccessStatusCode)
+            // {
+            //     // Leer la respuesta (string) y asignarla a la variable
+            //     apiResponse = await response.Content.ReadAsStringAsync();
+            // }
+            // else
+            // {
+            //     apiResponse = "Error al llamar a la API";
+            // }
+        }
+        catch (Exception ex)
+        {
+            
+        }
     }
 }
+<script>
+    window.submitWebpayForm = function (transactionData) {
+        // Crear un formulario dinámico
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = 'https://webpay3gint.transbank.cl/rswebpaytransaction/api/webpay/v1.0/transactions';
+        // form.action = 'https://webpay3gint.transbank.cl/rswebpaytransaction/api/webpay/v1.0/transactions';
+
+        // Crear un campo oculto para cada propiedad del JSON
+        for (var key in transactionData) {
+            if (transactionData.hasOwnProperty(key)) {
+                var input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = transactionData[key];
+
+                // Agregar el campo al formulario
+                form.appendChild(input);
+            }
+        }
+
+        // Enviar el formulario
+        document.body.appendChild(form);
+        form.submit();
+    };
+
+</script>

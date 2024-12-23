@@ -2,27 +2,42 @@ using API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Registrar HttpClient
+builder.Services.AddHttpClient();
 
+// Otros servicios necesarios
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<TransbankService>();  // Registra el servicio de Transbank
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configuración de Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-
 app.MapControllers();
+app.UseCors("AllowAll"); // Usa la política de CORS
+app.UseRouting();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers(); // Asegúrate de mapear tus controladores
+});
 
 app.Run();
+

@@ -1,47 +1,20 @@
-﻿@using Transbank.Webpay.TransaccionCompleta.Responses
-@using static SitioWeb.Principal
-@inject HttpClient HttpClient
+﻿@page "/ReservaTransbank"
+@inject TransbankService TransbankService
 
-@page "/transbank"
-@inject TransbankApiService TransbankApiService
+<h3>Realizar Pago con Transbank</h3>
 
-<h3>Crear Transacción con Transbank</h3>
+<button class="btn btn-primary" @onclick="CreateTransaction">Crear Transacción</button>
 
-@if (IsLoading)
+@if (!string.IsNullOrEmpty(actionUrl))
 {
-    <p>Creando transacción...</p>
-}
-else if (Result != null)
-{
-    <p>Transacción creada con éxito.</p>
-    <p><strong>URL:</strong> @Result.OriginalRequest</p>
-    <p><strong>Token:</strong> @Result.Token</p>
-    <a href="@Result.OriginalRequest" target="_blank">Ir a Webpay</a>
-}
-else
-{
-    <button @onclick="CreateTransaction">Crear Transacción</button>
+    <p>Redirigiendo a: <a href="@actionUrl" target="_blank">@actionUrl</a></p>
 }
 
 @code {
-    private bool IsLoading = false;
-    private CreateResponse? Result;
+    private string actionUrl;
 
     private async Task CreateTransaction()
     {
-        IsLoading = true;
-        try
-        {
-            // Llama al servicio para crear la transacción a través de la API
-            Result = await TransbankApiService.CreateTransactionAsync();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error al crear la transacción: {ex.Message}");
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+       
     }
 }

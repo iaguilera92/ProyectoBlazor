@@ -14,7 +14,7 @@
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
-      "applicationUrl": "http://localhost:8084", //http://proyectoblazor.cl
+      "applicationUrl": "https://localhost:5002", // Cambiar a HTTPS en lugar de HTTP
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
