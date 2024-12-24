@@ -66,6 +66,15 @@ public class Principal
         {
             url = "https://www.ticobuycr.com/wp-content/uploads/2021/04/venta-por-internet_1.jpg";
         }
+        else if (imgUrl == 5)
+        {
+            url = "https://emprendepyme.net/wp-content/uploads/2023/03/cualidades-producto.jpg";
+        }
+        else if (imgUrl == 6)
+        {
+            url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpK3luyjdef0_KFW3p1I7upURnq3Rf31eVyQ&s";
+        }
+
         return url;
     }
     public void RemoverProducto(Productos producto)

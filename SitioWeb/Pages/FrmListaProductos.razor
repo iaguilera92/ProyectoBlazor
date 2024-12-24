@@ -54,7 +54,7 @@
                                 }
                                 else if (@producto.Stock > 0 && @producto.Stock < 10)
                                 {
-                                    <span class="stock-naranjo">
+                                    <span class="stock-naranjo"> 
                                         @producto.Stock.ToString()
                                     </span>
                                 }
@@ -196,9 +196,10 @@
         productos.Add(producto3);
         var producto4 = Principal.GetProducto(4, 23990, 4, 4, true);
         productos.Add(producto4);        
-        var producto5 = Principal.GetProducto(4, 17990, 5, 12, true);
+        var producto5 = Principal.GetProducto(5, 17990, 5, 12, true);
         productos.Add(producto5);
-
+        var producto6 = Principal.GetProducto(6, 7000, 6, 1, false);
+        productos.Add(producto6);
         Principal.Productos = productos;
         Principal.OnChange += StateHasChanged;
     }

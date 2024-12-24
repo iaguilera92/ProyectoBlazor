@@ -91,7 +91,11 @@
         Alert.ShowAlert("Confirmado el encuentro!", "Para finalizar realizar la reserva de la compra.", "success");
     }
 }
-
+<style>
+    .swal2-container{
+    z-index: 9999 !important;
+}
+</style>
 <script type="text/javascript">
     maptilersdk.config.apiKey = 'rvHUmSHpbNCQdRfaXg1e';
 
@@ -195,8 +199,18 @@
                     var day = selectedDate.getDate();
                     var month = selectedDate.getMonth() + 1;
                     var year = selectedDate.getFullYear();
-                    alert('Fecha seleccionada: ' + day + '/' + month + '/' + year);
-
+                    //alert('Fecha seleccionada: ' + day + '/' + month + '/' + year);
+                    return Swal.fire({
+                            title: day + "/" + month + "/" + year,
+                            text: "Fecha seleccionada para reserva: "+ day + "/" + month + "/" + year,
+                            imageUrl: "https://cdn-icons-png.flaticon.com/512/2907/2907150.png",
+                            imageWidth: 200,
+                            imageHeight: 170,
+                            showCancelButton: false,
+                            confirmButtonText: 'Entendido! <i class="fa-solid fa-calendar"> ',                            
+                            }).then(result => {
+                                return result.isConfirmed;
+                            });
                     DotNet.invokeMethodAsync('SitioWeb', 'CerrarMapaJS')
                         .then(() => {
                             console.log('Método C# invocado correctamente.');
@@ -211,8 +225,18 @@
                 var day = eventDate.getDate();
                 var month = eventDate.getMonth() + 1;
                 var year = eventDate.getFullYear();
-                alert('Fecha seleccionada: ' + day + '/' + month + '/' + year + ' (SE PUEDE RESERVAR)');
-
+                //alert('Fecha seleccionada: ' + day + '/' + month + '/' + year + ' (SE PUEDE RESERVAR)');
+                return Swal.fire({
+                            title: day + "/" + month + "/" + year,
+                            text: "Fecha seleccionada para reserva: "+ day + "/" + month + "/" + year,
+                            imageUrl: "https://cdn-icons-png.flaticon.com/512/2907/2907150.png",
+                            imageWidth: 200,
+                            imageHeight: 170,
+                            showCancelButton: false,
+                            confirmButtonText: 'Entendido! <i class="fa-solid fa-calendar"> ',                            
+                            }).then(result => {
+                                return result.isConfirmed;
+                            });
                 DotNet.invokeMethodAsync('SitioWeb', 'CerrarMapaJS')
                     .then(() => {
                         console.log('Método C# invocado correctamente.');
@@ -264,19 +288,21 @@
         [-70.636457, -33.433446], // DARDIGNAC
         [-70.633856, -33.437103], // METRO BAQUEDANO
         [-70.679953, -33.440264], // METRO QUINTA NORMAL
-        [-70.629051, -33.452693]  // METRO IRRARAZABAL
+        [-70.629051, -33.452693], // METRO IRRARAZABAL
+        [-70.658798, -33.453110], // METRO TOESCA
+        [-70.613475, -33.439129]  // METRO INES DE SUAREZ
     ];
 
     // Icono para la primera coordenada con efecto de rebote
-    const homeIconUrl = 'gps-home.png';
     const homeIcon = document.createElement('div');
-    homeIcon.style.backgroundImage = `url(${homeIconUrl})`;
-    homeIcon.style.width = '100px';
-    homeIcon.style.height = '100px';
+    homeIcon.style.backgroundImage = `url(https://cdn-icons-gif.flaticon.com/11201/11201850.gif)`;
+    homeIcon.style.width = '140px';
+    homeIcon.style.height = '140px';
     homeIcon.style.backgroundSize = 'contain';
     homeIcon.style.backgroundRepeat = 'no-repeat';
     homeIcon.style.backgroundPosition = 'center';
-    homeIcon.classList.add('bounce-animation');  // Aplicar la animación de rebote
+    homeIcon.style.mixBlendMode = 'multiply'; // Aplica el efecto de mezcla
+    document.body.appendChild(homeIcon);
 
     // Icono para las demás coordenadas
     const iconUrl = 'gps-delivery.png';
@@ -300,7 +326,7 @@
         popupContent.style.backgroundColor = 'white';
         popupContent.style.border = '1px solid #ccc';
         popupContent.style.borderRadius = '5px';
-        popupContent.innerHTML = '<strong>Aquí estoy baby :(</strong>';
+        popupContent.innerHTML = '<strong>Aquí estas!</strong>';
         return popupContent;
     };
 
