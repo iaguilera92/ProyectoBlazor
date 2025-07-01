@@ -1,2 +1,2 @@
 # ProyectoBlazor
-Sitio web (blazor)
+BLAZOR, C#, API REST. 
